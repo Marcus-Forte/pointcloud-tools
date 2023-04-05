@@ -1,0 +1,33 @@
+@startuml duna-processing-architecture
+
+actor User
+
+rectangle docker-composition {
+    
+node web-client as WC {
+
+}    
+node envoy-proxy as EP {
+
+}
+
+node cloud-processing as CP {
+
+}
+
+note as N1 
+Interface defined by a common <b>.proto
+end note
+}
+
+
+' Relations
+User -> WC: "::<port>" 
+WC <-> EP: "::5000"
+EP <-> CP: "::5000"
+
+WC .. N1
+CP .. N1
+
+
+@enduml

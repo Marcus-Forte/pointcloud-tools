@@ -1,0 +1,29 @@
+
+syntax = "proto3";
+
+service ProcessPointCloud 
+{
+    rpc AddOneToPoint (Point) returns (Point) {}
+    rpc ComputeCentroid (PointCloud) returns (Point) {}
+    // Maybe better to return indices only.
+    rpc VoxelGrid (VoxelFilterInput) returns (PointCloud) {}
+    rpc VoxelMax (VoxelFilterInput) returns (PointCloud) {}
+}
+
+message Point {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    optional uint32 r = 4;
+    optional uint32 g = 5;
+    optional uint32 b = 6;
+}
+
+message PointCloud {
+    repeated Point Points = 1; 
+}
+
+message VoxelFilterInput {
+    float resolution = 1;
+    PointCloud pointcloud = 2;
+}
