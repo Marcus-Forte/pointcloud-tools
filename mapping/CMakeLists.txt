@@ -3,7 +3,7 @@ set (COMPONENT_NAME "mapping")
 message(STATUS "Processing component: ${CMAKE_CURRENT_LIST_DIR}")
 
 set(SRCS 
-src/voxel_hashing.cpp)
+src/voxel_hashing_map.cpp)
 
 add_library(${COMPONENT_NAME} SHARED ${SRCS})
 
