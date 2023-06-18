@@ -13,7 +13,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Declare options
 option(BUILD_FILTERS "Build filter functions" ON)
 option(BUILD_GRPC "Build GRPC API functions" OFF)
-
+option(BUILD_MAPPING "Build mapping " ON)
+option(BUILD_TESTS "Build tests" OFF)
 # OLD
 # include_directories(include)
 # add_library(global_registrator
@@ -41,6 +42,13 @@ add_subdirectory(filters)
 endif()
 if(BUILD_GRPC)
 add_subdirectory(grpc)
+endif()
+if(BUILD_MAPPING)
+add_subdirectory(mapping)
+endif()
+
+if(BUILD_TESTS)
+
 endif()
 
 # Filters
