@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(duna-cloud-tools)
 set(CMAKE_CXX_STANDARD 17)
-find_package(PCL 1.10 REQUIRED COMPONENTS common io filters)
+find_package(PCL 1.10 REQUIRED COMPONENTS common io filters visualization)
 find_package(OpenMP REQUIRED)
 
 link_libraries(${PCL_LIBRARIES})

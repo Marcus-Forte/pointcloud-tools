@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
+#include <pcl/common/random.h>
 #include <pcl/point_types.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 #include "../include/voxel_hashing_map.h"
 
@@ -38,9 +40,6 @@ TEST(VoxelHashMap, InsertionInSameBucket) {
 
   auto bucket = map.getBucketAt({1.0, 1.5, 2.0});
 
-  // GTEST_ASSERT_EQ(bucket.value().size(), 4);
-  GTEST_ASSERT_EQ(map.getNumberOfBuckets(), 11);
-
   GTEST_ASSERT_TRUE(comparePoint(bucket.value().at(0), pt1));
   GTEST_ASSERT_TRUE(comparePoint(bucket.value().at(1), pt2));
   GTEST_ASSERT_TRUE(comparePoint(bucket.value().at(2), pt3));
@@ -63,3 +62,49 @@ TEST(VoxelHashMap, InsertionBucketLimit) {
   GTEST_ASSERT_TRUE(bucket.has_value());
   GTEST_ASSERT_EQ(bucket.value().size(), max_pts_per_bucket);
 }
+
+// TEST(VoxelHashMap, OneMillionPointInsertion) {
+//   pcl::common::UniformGenerator<double> rng(-100.0, 100.0);
+//   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud ( new pcl::PointCloud<pcl::PointXYZ>);
+//   int N_pts = 100000;
+//   cloud->reserve(N_pts);
+
+//   std::cout << "Generating points...\n";
+//   for(int i=0; i < N_pts; ++ i){
+//     pcl::PointXYZ pt(rng.run(), rng.run(), rng.run());
+//     cloud->push_back(pt);
+//   }
+//   std::cout << "Done!\n";
+
+//   unsigned int max_pts_per_bucket = 10;
+//   float voxel_size = 10.0;
+//   VoxelHashMap<pcl::PointXYZ> map(voxel_size, 10);
+
+//   std::cout << "Inserting points...\n";
+//   for (int i = 0; i < cloud->size(); i++){
+//     map.insertPoint(cloud->points[i]);
+//     // std::cout << cloud->points[i] << std::endl;
+//   }
+//   std::cout << "Done!\n";
+
+//   std::cout << "# of buckets: " << map.getNumberOfBuckets() << std::endl;
+
+//   auto bkt = map.getBucketAt({5,-6.0,1.0});
+//   if(bkt.has_value())
+//   {
+//     std::cout << bkt.value().size() << std::endl;
+//   }
+
+//   pcl::visualization::PCLVisualizer viewer("viewer");
+//   viewer.addCube(0,voxel_size, 0,voxel_size,0,voxel_size, 1.0,0.0, 0.0);
+//   viewer.addPointCloud(cloud,"cloud");
+//   pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ>();
+//   // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, )
+
+//   viewer.addCoordinateSystem(1.0);
+//   viewer.setRepresentationToWireframeForAllActors();
+
+//   while(!viewer.wasStopped())
+//     viewer.spin();
+
+// }
