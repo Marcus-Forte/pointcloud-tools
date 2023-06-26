@@ -1,0 +1,49 @@
+@startuml MapRep
+
+skinparam Note {
+  BorderColor DarkGray
+  BackgroundColor LightYellow
+}
+
+note as N1
+`pcl::registration::CorrespondenceEstimation` is unfortunetely
+badly coupled with pcl::search::kdTree. Thus we cannod abstract the search
+method away.
+
+This forces us to define our own search/ target pointcloud (or map) interface,
+and maybe even correspondence definition, since the one provided by pcl
+requires a pcl::PointCloud representation of the map/target. Depending on the map
+representation, this may not be convenient.
+end note
+
+
+
+struct Correspondence {
+    Point src
+    point tgt
+}
+
+note left 
+How do we return either:
+`correspondence`  with indices to `target` and
+plain tuple points of correspondences?
+end note
+
+Correspondence ..[hidden] MapRepresentation
+interface MapRepresentation {
++ insertPoint(point)
++ insertPoints(points)
++ PointCloud getPointCloudRepresentation() // should not be used often. Requires map traverse.
++ Correspondences getCorrespondences(source)
+}
+
+note left of MapRepresentation::getCorrespondences
+Mainly used by the registration
+end note
+
+
+
+@enduml
+
+
+

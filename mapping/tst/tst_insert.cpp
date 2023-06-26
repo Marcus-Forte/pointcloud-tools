@@ -3,7 +3,7 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include "../include/voxel_hashing_map.h"
+#include "duna/mapping/voxel_hashing_map.h"
 
 template <class PointT>
 bool comparePoint(const PointT& a, const PointT& b) {
@@ -63,48 +63,82 @@ TEST(VoxelHashMap, InsertionBucketLimit) {
   GTEST_ASSERT_EQ(bucket.value().size(), max_pts_per_bucket);
 }
 
-// TEST(VoxelHashMap, OneMillionPointInsertion) {
-//   pcl::common::UniformGenerator<double> rng(-100.0, 100.0);
-//   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud ( new pcl::PointCloud<pcl::PointXYZ>);
-//   int N_pts = 100000;
-//   cloud->reserve(N_pts);
+TEST(VoxelHashMap, OneMillionPointInsertion) {
+  pcl::common::UniformGenerator<double> rng(-100.0, 100.0);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  int N_pts = 100000;
+  cloud->reserve(N_pts);
 
-//   std::cout << "Generating points...\n";
-//   for(int i=0; i < N_pts; ++ i){
-//     pcl::PointXYZ pt(rng.run(), rng.run(), rng.run());
-//     cloud->push_back(pt);
-//   }
-//   std::cout << "Done!\n";
+  std::cout << "Generating points...\n";
+  for (int i = 0; i < N_pts; ++i) {
+    pcl::PointXYZ pt(rng.run(), rng.run(), rng.run());
+    cloud->push_back(pt);
+  }
+  std::cout << "Done!\n";
 
-//   unsigned int max_pts_per_bucket = 10;
-//   float voxel_size = 10.0;
-//   VoxelHashMap<pcl::PointXYZ> map(voxel_size, 10);
+  unsigned int max_pts_per_bucket = 10;
+  float voxel_size = 10.0;
+  VoxelHashMap<pcl::PointXYZ> map(voxel_size, 10);
 
-//   std::cout << "Inserting points...\n";
-//   for (int i = 0; i < cloud->size(); i++){
-//     map.insertPoint(cloud->points[i]);
-//     // std::cout << cloud->points[i] << std::endl;
-//   }
-//   std::cout << "Done!\n";
+  std::cout << "Inserting points...\n";
+  for (int i = 0; i < cloud->size(); i++) {
+    map.insertPoint(cloud->points[i]);
+    // std::cout << cloud->points[i] << std::endl;
+  }
+  std::cout << "Done!\n";
 
-//   std::cout << "# of buckets: " << map.getNumberOfBuckets() << std::endl;
+  std::cout << "# of buckets: " << map.getNumberOfBuckets() << std::endl;
 
-//   auto bkt = map.getBucketAt({5,-6.0,1.0});
-//   if(bkt.has_value())
-//   {
-//     std::cout << bkt.value().size() << std::endl;
-//   }
+  auto bkt = map.getBucketAt({5, -6.0, 1.0});
+  if (bkt.has_value()) {
+    std::cout << bkt.value().size() << std::endl;
+  }
 
-//   pcl::visualization::PCLVisualizer viewer("viewer");
-//   viewer.addCube(0,voxel_size, 0,voxel_size,0,voxel_size, 1.0,0.0, 0.0);
-//   viewer.addPointCloud(cloud,"cloud");
-//   pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ>();
-//   // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, )
+  // pcl::visualization::PCLVisualizer viewer("viewer");
+  // viewer.addCube(0, voxel_size, 0, voxel_size, 0, voxel_size, 1.0, 0.0, 0.0);
+  // viewer.addPointCloud(cloud, "cloud");
+  // pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ>();
+  // // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, )
 
-//   viewer.addCoordinateSystem(1.0);
-//   viewer.setRepresentationToWireframeForAllActors();
+  // viewer.addCoordinateSystem(1.0);
+  // viewer.setRepresentationToWireframeForAllActors();
 
-//   while(!viewer.wasStopped())
-//     viewer.spin();
+  // while (!viewer.wasStopped()) viewer.spin();
+}
 
-// }
+TEST(VoxelHashMap, PointCloudInsert) {
+  pcl::common::UniformGenerator<double> rng(-100.0, 100.0);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  int N_pts = 100000;
+  cloud->reserve(N_pts);
+  std::cout << "Generating points...\n";
+  for (int i = 0; i < N_pts; ++i) {
+    pcl::PointXYZ pt(rng.run(), rng.run(), rng.run());
+    cloud->push_back(pt);
+  }
+  std::cout << "Done!\n";
+
+  unsigned int max_pts_per_bucket = 10;
+  float voxel_size = 20.0;
+  VoxelHashMap<pcl::PointXYZ> map(voxel_size, 10);
+
+  map.insertPointCloud(*cloud);
+  std::cout << "Done!\n";
+
+  std::cout << "# of buckets: " << map.getNumberOfBuckets() << std::endl;
+
+  auto cloud_rep = map.createPointCloudRepresentation();
+
+  GTEST_ASSERT_GT(cloud_rep->size(), 0);
+
+  //   pcl::visualization::PCLVisualizer viewer("viewer");
+  // viewer.addCube(0, voxel_size, 0, voxel_size, 0, voxel_size, 1.0, 0.0, 0.0);
+  // viewer.addPointCloud(cloud, "cloud");
+  // viewer.addPointCloud(cloud_rep, "ss_cloud");
+  // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0,0,0,"ss_cloud");
+  // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5.0,
+  // "ss_cloud"); viewer.addCoordinateSystem(1.0);
+  // viewer.setRepresentationToWireframeForAllActors();
+
+  // while (!viewer.wasStopped()) viewer.spin();
+}
