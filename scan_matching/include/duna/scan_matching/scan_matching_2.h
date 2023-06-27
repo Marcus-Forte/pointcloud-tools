@@ -15,13 +15,10 @@ class ScanMatching6DOFPoint2Point
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
   using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-  // using PointCloudTarget = pcl::PointCloud<PointTarget>;
-  // using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
-  // using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
-
   using JacobianType = Eigen::Matrix<Scalar, 3, 6, Eigen::RowMajor>;
 
-  ScanMatching6DOFPoint2Point(PointCloudSourceConstPtr source, typename IMap<PointTarget>::Ptr map)
+  ScanMatching6DOFPoint2Point(const PointCloudSourceConstPtr source,
+                              const typename IMap<PointTarget>::Ptr map)
       : ScanMatchingBase<PointSource, PointTarget, Scalar, ScanMatching6DOFPoint2Point>(source,
                                                                                         map) {}
 
@@ -35,8 +32,10 @@ class ScanMatching6DOFPoint2Point
     const PointSource &src_pt = src_corrs_->points[index];
     const PointTarget &tgt_pt = tgt_corrs_->points[index];
 
-    Eigen::Matrix<Scalar, 4, 1> src_(src_pt.x, src_pt.y, src_pt.z, 1);
-    Eigen::Matrix<Scalar, 4, 1> tgt_(tgt_pt.x, tgt_pt.y, tgt_pt.z, 0);
+    Eigen::Matrix<Scalar, 4, 1> src_(static_cast<Scalar>(src_pt.x), static_cast<Scalar>(src_pt.y),
+                                     static_cast<Scalar>(src_pt.z), 1.0);
+    Eigen::Matrix<Scalar, 4, 1> tgt_(static_cast<Scalar>(tgt_pt.x), static_cast<Scalar>(tgt_pt.y),
+                                     static_cast<Scalar>(tgt_pt.z), 0.0);
 
     Eigen::Matrix<Scalar, 4, 1> warped_src_ = transform_ * src_;
     warped_src_[3] = 0;
@@ -52,7 +51,6 @@ class ScanMatching6DOFPoint2Point
   }
 
   virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian, unsigned int index) override {
-
     if (index >= src_corrs_->size()) return false;
     const PointSource &src_pt = src_corrs_->points[index];
     const PointTarget &tgt_pt = tgt_corrs_->points[index];

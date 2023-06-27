@@ -3,6 +3,7 @@
 #include <duna_optimizer/cost_function_numerical_dynamic.h>
 #include <duna_optimizer/levenberg_marquadt.h>
 #include <duna_optimizer/levenberg_marquadt_dynamic.h>
+#include <duna_optimizer/loss_function/geman_mcclure.h>
 #include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
@@ -17,6 +18,7 @@
 #include <thread>
 
 #include "duna/mapping/VoxelHashMap.h"
+#include "duna/mapping/KDTreeMap.h"
 #include "duna/scan_matching/scan_matching.h"
 #include "duna/scan_matching/scan_matching_2.h"
 #include "pcl/registration/correspondence_estimation.h"
@@ -52,7 +54,7 @@ class RegistrationPoint2Point : public ::testing::Test {
 
     target_kdtree->setInputCloud(target);
 
-    this->optimizer.setMaximumIterations(1);
+    this->optimizer.setMaximumIterations(25);
 
     duna_optimizer::logger::setGlobalVerbosityLevel(duna_optimizer::L_DEBUG);
   }
@@ -79,10 +81,11 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   pcl::transformPointCloud(*this->target, *this->source, this->reference_transform);
 
   double voxel_size = 0.1;
-  double corr_dist = 02.2;
+  double corr_dist = 0.15;
 
-  kiss_icp::VoxelHashMap<PointT>::Ptr map(
-      new kiss_icp::VoxelHashMap<PointT>(voxel_size, 100, 10));
+  duna::IMap<PointT>::Ptr map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(voxel_size, 100, 10);
+  map = std::make_shared<duna::KDTreeMap<PointT>>();
+  // kiss_icp::VoxelHashMap<PointT>::Ptr map(new kiss_icp::VoxelHashMap<PointT>(voxel_size, 100, 10));
   map->AddPoints(*this->target);
 
   typename duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>::Ptr scan_matcher_model;
@@ -97,108 +100,70 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   scan_matcher_model->setMaximumCorrespondenceDistance(corr_dist);
   scan_matcher_model_old->setMaximumCorrespondenceDistance(corr_dist);
 
-  auto cost = new duna_optimizer::CostFunctionAnalytical<TypeParam, 6, 3>(scan_matcher_model,
+  auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model_old,
                                                                          this->source->size());
 
   const auto& [src_ptr, tgt_ptr] = map->GetCorrespondences(*this->source, corr_dist);
 
   auto pointCloudRep = map->Pointcloud();
 
-  // VIZ
-  // std::cout << "VH: Cors: " << src_ptr->size() << std::endl;
   pcl::registration::CorrespondenceEstimation<PointT, PointT> estimator;
-  // estimator.setInputSource(this->source);
-  // estimator.setInputTarget(this->target);
-  // pcl::Correspondences corrs;
-  // estimator.determineCorrespondences(corrs, corr_dist);
-  // std::cout << "PCL: Cors: " << corrs.size() << std::endl;
-
-  // pcl::visualization::PCLVisualizer viewer("viewer");
-  // viewer.addCube(0, voxel_size, 0, voxel_size, 0, voxel_size, 1.0, 1.0, 1.0);
-  // viewer.addPointCloud(this->source, "source");
-  // viewer.addPointCloud(this->target, "target");
-  // viewer.addPointCloud(pointCloudRep, "rep");
-  // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0, 0,
-  //                                         "source");
-  // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0,
-  //                                         "target");
-  // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5.0,
-  //                                         "rep");
-  // for (int i = 0; i < src_ptr->size(); ++i) {
-  //   viewer.addLine(src_ptr->points[i], tgt_ptr->points[i], 1.0, 0.0, 0.0,
-  //                  "source" + std::to_string(i));
-  // }
-
-  // for (int i = 0; i < corrs.size(); ++i) {
-  //   viewer.addLine(this->source->points[corrs[i].index_query],
-  //                  this->target->points[corrs[i].index_match], 0.0, 1.0, 0,
-  //                  "line" + std::to_string(i));
-  // }
-
-  // viewer.addCoordinateSystem(0.1);
-  // viewer.setRepresentationToWireframeForAllActors();
-
-  // while (!viewer.wasStopped()) viewer.spin();
-  // VIZ END
 
   this->optimizer.addCost(cost);
 
   TypeParam x0[6] = {0};
   // Act
 
-  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("viewer"));
+  // pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("viewer"));
 
-  // std::thread t_viewer([&viewer](void) {
-  //   while (!viewer->wasStopped()) {
-  //     g_mutex.lock();
-  //     viewer->spinOnce();
-  //     g_mutex.unlock();
+  PointCloutT::Ptr source_transformed(new PointCloutT);
+  this->optimizer.minimize(x0);
+  // for (int i = 0; i < 100; ++i) {
+  //   // VIZ
+  //   so3::convert6DOFParameterToMatrix(x0, this->result_transform);
+  //   pcl::transformPointCloud(*this->source, *source_transformed, this->result_transform);
+
+  //   // g_mutex.lock();
+  //   // viewer->removeAllShapes();
+  //   // viewer->addCoordinateSystem(0.1);
+  //   // viewer->addPointCloud(this->target, "target");
+  //   // viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0,
+  //   0.0, 0,
+  //   //                                          "target");
+  //   // viewer->removePointCloud("tf_src");
+  //   // viewer->addPointCloud(source_transformed, "tf_src");
+
+  //   //
+  //   viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0,
+  //   //                                          1.0, "tf_src");
+
+  //   const auto& [src_ptr, tgt_ptr] = map->GetCorrespondences(*source_transformed, corr_dist);
+  //   pcl::Correspondences corrs_from_hashmap;
+  //   pcl::Correspondences corrs;
+
+  //   for (int j = 0; j < src_ptr->size(); ++j) {
+  //     pcl::Correspondence corr;
+  //     corr.index_query = j;
+  //     corr.index_match = j;
+
+  //     corrs_from_hashmap.push_back(corr);
   //   }
-  // });
 
-  // viewer->spinOnce(2000);
-  PointCloutT::Ptr viz_cloud(new PointCloutT);
-  for (int i = 0; i < 100; ++i) {
-    
-    // VIZ
-    so3::convert6DOFParameterToMatrix(x0, this->result_transform);
-    pcl::transformPointCloud(*this->source, *viz_cloud, this->result_transform);
+  //   estimator.setInputSource(source_transformed);
+  //   estimator.setInputTarget(this->target);
 
-    // g_mutex.lock();
-    viewer->removeAllShapes();
-    // viewer->addCoordinateSystem(0.1);
-    viewer->addPointCloud(this->target, "target");
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0,
-                                             "target");
-    viewer->removePointCloud("tf_src");
-    viewer->addPointCloud(viz_cloud, "tf_src");
+  //   estimator.determineCorrespondences(corrs, corr_dist);
 
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0,
-                                             1.0, "tf_src");
+  //   std::cout << "# Hashmap Cors: " << corrs_from_hashmap.size() << std::endl;
+  //   std::cout << "# PCL Cors: " << corrs.size() << std::endl;
 
-    const auto& [src_ptr, tgt_ptr] = map->GetCorrespondences(*viz_cloud, corr_dist);
-    pcl::Correspondences corrs;
-    for (int j = 0; j < src_ptr->size(); ++j) {
-      pcl::Correspondence corr;
-      corr.index_query = j;
-      corr.index_match = j;
-    
-      corrs.push_back(corr);
-    }
+  //   // viewer->addCorrespondences<PointT>(source_transformed, this->target, corrs_from_hashmap);
+  //   // viewer->spinOnce(1000);
 
-    estimator.setInputSource(viz_cloud);
-    estimator.setInputTarget(this->target);
-    
-    // estimator.determineCorrespondences(corrs, corr_dist);
-    viewer->addCorrespondences<PointT>(viz_cloud, this->target, corrs);
-    viewer->spinOnce(1000);
+  //   this->optimizer.minimize(x0);
 
-    this->optimizer.minimize(x0);
-
-    // VIZ END
-  }
-
-  // t_viewer.join();
+  //   // VIZ END
+  // }
 
   so3::convert6DOFParameterToMatrix(x0, this->result_transform);
 

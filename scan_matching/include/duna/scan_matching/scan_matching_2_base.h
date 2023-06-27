@@ -10,7 +10,7 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
   using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
-  ScanMatchingBase(PointCloudSourceConstPtr source, typename IMap<PointTarget>::Ptr map)
+  ScanMatchingBase(const PointCloudSourceConstPtr source, const typename IMap<PointTarget>::Ptr map)
       : map_(map), source_(source), maximum_corr_dist_(std::numeric_limits<double>::max()) {
     if (!source_ || source_->size() == 0)
       duna_optimizer::logger::log_error("No points at source cloud!");

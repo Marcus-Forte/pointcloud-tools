@@ -6,6 +6,7 @@ find_package(duna-optimizer REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(tsl-robin-map REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time)
+include(CTest)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING

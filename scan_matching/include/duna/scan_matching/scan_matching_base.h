@@ -52,7 +52,7 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   virtual void update(const Scalar *x) override {
     duna_optimizer::logger::log_debug("Update");
     setup(x);
-    
+
     duna_optimizer::logger::log_debug("Transforming");
     std::cout << "Applying: " << transform_ << std::endl;
     pcl::transformPointCloud(*source_, *transformed_source_, transform_);
@@ -128,4 +128,4 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
     return true;
   }
 };
-}  // namespace duna
+}  // namespace duna_old
