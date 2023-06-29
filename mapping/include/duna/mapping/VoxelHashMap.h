@@ -43,6 +43,7 @@ class VoxelHashMap : public duna::IMap<PointT> {
   using Ptr = std::shared_ptr<VoxelHashMap>;
   using PointCloudT = pcl::PointCloud<PointT>;
   using PointCloudTPtr = typename PointCloudT::Ptr;
+  using CorrespondencesTuple = typename duna::IMap<PointT>::CorrespondencesTuple;
 
   // using Vector3dVector = std::vector<Eigen::Vector3d>;
   using PointCloudTTuple = std::tuple<PointCloudTPtr, PointCloudTPtr>;
@@ -71,8 +72,14 @@ class VoxelHashMap : public duna::IMap<PointT> {
         max_distance_(max_distance),
         max_points_per_voxel_(max_points_per_voxel) {}
 
+  virtual ~VoxelHashMap() = default;
+
   PointCloudTTuple GetCorrespondences(const PointCloudT &points,
                                       double max_correspondance_distance) const override;
+
+  CorrespondencesTuple GetCorrespondencesSourceIndices(
+      const PointCloudT &points, double max_correspondance_distance) const override;
+
   inline void Clear() { map_.clear(); }
   inline bool Empty() const { return map_.empty(); }
   void Update(const PointCloudT &points, const PointT &origin);

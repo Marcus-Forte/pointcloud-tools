@@ -17,8 +17,8 @@
 #include <mutex>
 #include <thread>
 
-#include "duna/mapping/VoxelHashMap.h"
 #include "duna/mapping/KDTreeMap.h"
+#include "duna/mapping/VoxelHashMap.h"
 #include "duna/scan_matching/scan_matching.h"
 #include "duna/scan_matching/scan_matching_2.h"
 #include "pcl/registration/correspondence_estimation.h"
@@ -54,7 +54,7 @@ class RegistrationPoint2Point : public ::testing::Test {
 
     target_kdtree->setInputCloud(target);
 
-    this->optimizer.setMaximumIterations(25);
+    this->optimizer.setMaximumIterations(100);
 
     duna_optimizer::logger::setGlobalVerbosityLevel(duna_optimizer::L_DEBUG);
   }
@@ -83,9 +83,9 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   double voxel_size = 0.1;
   double corr_dist = 0.15;
 
-  duna::IMap<PointT>::Ptr map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(voxel_size, 100, 10);
-  map = std::make_shared<duna::KDTreeMap<PointT>>();
-  // kiss_icp::VoxelHashMap<PointT>::Ptr map(new kiss_icp::VoxelHashMap<PointT>(voxel_size, 100, 10));
+  duna::IMap<PointT>::Ptr map;
+  // map = std::make_shared<duna::KDTreeMap<PointT>>();
+  map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(voxel_size, 100, 1);
   map->AddPoints(*this->target);
 
   typename duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>::Ptr scan_matcher_model;
@@ -100,8 +100,8 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   scan_matcher_model->setMaximumCorrespondenceDistance(corr_dist);
   scan_matcher_model_old->setMaximumCorrespondenceDistance(corr_dist);
 
-  auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model_old,
-                                                                         this->source->size());
+  auto cost = new duna_optimizer::CostFunctionAnalytical<TypeParam, 6, 3>(scan_matcher_model,
+                                                                          this->source->size());
 
   const auto& [src_ptr, tgt_ptr] = map->GetCorrespondences(*this->source, corr_dist);
 
@@ -114,56 +114,72 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   TypeParam x0[6] = {0};
   // Act
 
-  // pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("viewer"));
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("viewer"));
+  bool continue_flag;
+  viewer->registerKeyboardCallback([&continue_flag](const pcl::visualization::KeyboardEvent& event) {
+    if(event.getKeyCode() == 'p')
+      continue_flag = true;
+  });
 
   PointCloutT::Ptr source_transformed(new PointCloutT);
   this->optimizer.minimize(x0);
-  // for (int i = 0; i < 100; ++i) {
-  //   // VIZ
-  //   so3::convert6DOFParameterToMatrix(x0, this->result_transform);
-  //   pcl::transformPointCloud(*this->source, *source_transformed, this->result_transform);
 
-  //   // g_mutex.lock();
-  //   // viewer->removeAllShapes();
-  //   // viewer->addCoordinateSystem(0.1);
-  //   // viewer->addPointCloud(this->target, "target");
-  //   // viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0,
-  //   0.0, 0,
-  //   //                                          "target");
-  //   // viewer->removePointCloud("tf_src");
-  //   // viewer->addPointCloud(source_transformed, "tf_src");
+  this->optimizer.setMaximumIterations(1);
+  *source_transformed = *this->source;
+  x0[0] = x0[1] = x0[2] = x0[3] = x0[4] = x0[5] = 0;
+  for (int i = 0; i < 100; ++i) {
+    // VIZ
 
-  //   //
-  //   viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0,
-  //   //                                          1.0, "tf_src");
+    viewer->removeAllShapes();
+    viewer->removeAllPointClouds();
+    viewer->addCoordinateSystem(1.0);
+    viewer->addPointCloud(this->target, "target");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0,
+                                             "target");
+    viewer->removePointCloud("tf_src");
+    viewer->addPointCloud(source_transformed, "tf_src");
 
-  //   const auto& [src_ptr, tgt_ptr] = map->GetCorrespondences(*source_transformed, corr_dist);
-  //   pcl::Correspondences corrs_from_hashmap;
-  //   pcl::Correspondences corrs;
+    //
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0,
+                                             1.0, "tf_src");
 
-  //   for (int j = 0; j < src_ptr->size(); ++j) {
-  //     pcl::Correspondence corr;
-  //     corr.index_query = j;
-  //     corr.index_match = j;
+    const auto& [src_corrs_ptr, tgt_ptr] =
+        map->GetCorrespondencesSourceIndices(*source_transformed, corr_dist);
+    pcl::Correspondences corrs_from_hashmap;
+    pcl::Correspondences corrs;
 
-  //     corrs_from_hashmap.push_back(corr);
-  //   }
+    for (int j = 0; j < src_corrs_ptr->size(); ++j) {
+      pcl::Correspondence corr;
+      corr.index_query = (*src_corrs_ptr)[j].index_query;
+      corr.index_match = j;
 
-  //   estimator.setInputSource(source_transformed);
-  //   estimator.setInputTarget(this->target);
+      corrs_from_hashmap.push_back(corr);
+    }
 
-  //   estimator.determineCorrespondences(corrs, corr_dist);
+    estimator.setInputSource(source_transformed);
+    estimator.setInputTarget(this->target);
+    estimator.determineCorrespondences(corrs, corr_dist);
 
-  //   std::cout << "# Hashmap Cors: " << corrs_from_hashmap.size() << std::endl;
-  //   std::cout << "# PCL Cors: " << corrs.size() << std::endl;
+    std::cout << "# Hashmap Cors: " << corrs_from_hashmap.size() << std::endl;
+    std::cout << "# PCL Cors: " << corrs.size() << std::endl;
 
-  //   // viewer->addCorrespondences<PointT>(source_transformed, this->target, corrs_from_hashmap);
-  //   // viewer->spinOnce(1000);
+    viewer->addCorrespondences<PointT>(source_transformed, tgt_ptr, corrs_from_hashmap);
+    while(continue_flag == false) {
+      viewer->spinOnce(100);
+    }
 
-  //   this->optimizer.minimize(x0);
+    continue_flag = false;
+    
+    
 
-  //   // VIZ END
-  // }
+    auto result = this->optimizer.minimize(x0);
+    so3::convert6DOFParameterToMatrix(x0, this->result_transform);
+    pcl::transformPointCloud(*this->source, *source_transformed, this->result_transform);
+
+    if (result == duna_optimizer::SMALL_DELTA) break;
+
+    // VIZ END
+  }
 
   so3::convert6DOFParameterToMatrix(x0, this->result_transform);
 

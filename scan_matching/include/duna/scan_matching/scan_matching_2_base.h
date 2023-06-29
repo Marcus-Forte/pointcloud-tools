@@ -32,11 +32,11 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
 
     // Find Correspondences
     duna_optimizer::logger::log_debug("Updating correspondences... @ %f", maximum_corr_dist_);
-    const auto &[src_corrs, tgt_corrs] =
-        map_->GetCorrespondences(*transformed_source_, maximum_corr_dist_);
+    const auto &[src_corrs, tgt_corrs_points] =
+        map_->GetCorrespondencesSourceIndices(*transformed_source_, maximum_corr_dist_);
 
     this->src_corrs_ = src_corrs;
-    this->tgt_corrs_ = tgt_corrs;
+    this->tgt_corrs_points_ = tgt_corrs_points;
 
     duna_optimizer::logger::log_debug("found: %d / %d", src_corrs_->size(), source_->size());
   }
@@ -54,11 +54,13 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
 
  protected:
   PointCloudSourceConstPtr source_;
+  PointCloudSourcePtr tgt_corrs_points_;
+
   PointCloudSourcePtr transformed_source_;
   Eigen::Matrix<Scalar, 4, 4> transform_;
   typename IMap<PointTarget>::Ptr map_;
-  PointCloudSourcePtr src_corrs_;
-  PointCloudSourcePtr tgt_corrs_;
+  duna::mapping::SrcCorrespondencesPtr src_corrs_;
+  
 
   float overlap_;
 
