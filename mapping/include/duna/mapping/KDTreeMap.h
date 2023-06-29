@@ -66,9 +66,7 @@ class KDTreeMap : public IMap<PointT> {
 
       if (distance[0] > max_correspondance_distance) continue;
 
-      duna::mapping::SrcCorrespondence corr;
-      corr.index_query = i;
-      correspondences->emplace_back(corr);
+      correspondences->emplace_back(i);
       target->emplace_back(pointcloud_->points[index[0]]);
     }
 

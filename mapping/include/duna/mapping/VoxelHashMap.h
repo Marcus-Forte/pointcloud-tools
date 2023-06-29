@@ -93,5 +93,24 @@ class VoxelHashMap : public duna::IMap<PointT> {
   double max_distance_;
   int max_points_per_voxel_;
   tsl::robin_map<Voxel, VoxelBlock, VoxelHash> map_;
+
+  // Internal structures //
+  struct ResultTuple {
+    ResultTuple(std::size_t n) {
+      source.reserve(n);
+      target.reserve(n);
+    }
+    PointCloudT source;
+    PointCloudT target;
+  };
+
+  struct ResultTupleCorr {
+    ResultTupleCorr(std::size_t n) {
+      src_corrs.reserve(n);
+      target_points.reserve(n);
+    }
+    duna::mapping::SrcCorrespondences src_corrs;
+    PointCloudT target_points;
+  };
 };
 }  // namespace kiss_icp

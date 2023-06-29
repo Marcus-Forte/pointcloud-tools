@@ -28,7 +28,6 @@ install(
 
 if(BUILD_TESTS)
     find_package(GTest REQUIRED)
-    enable_testing()
     include(GoogleTest)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
     get_filename_component(DATASET_PATH tst/data/ REALPATH)
@@ -37,7 +36,6 @@ if(BUILD_TESTS)
     # tst/registration_point2plane.cpp
     # tst/registration_point2plane3DOF.cpp
     tst/registration_point2point.cpp
-    tst/registration_point2point2.cpp
     # tst/sequence_3dof.cpp
     )
     foreach(test_case ${tst_srcs})

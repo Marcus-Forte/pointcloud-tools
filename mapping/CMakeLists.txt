@@ -33,7 +33,6 @@ install(
 
 if(BUILD_TESTS)
     find_package(GTest REQUIRED)
-    enable_testing()
     include(GoogleTest)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
     set(tst_srcs

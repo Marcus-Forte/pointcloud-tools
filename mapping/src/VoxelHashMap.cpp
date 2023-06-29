@@ -24,6 +24,7 @@
 
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_reduce.h>
+#include <tbb/task_arena.h>
 
 #include <Eigen/Core>
 #include <algorithm>
@@ -31,32 +32,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
-// This parameters are not intended to be changed, therefore we do not expose it
-namespace {
-
-// template<class PointT>
-struct ResultTuple {
-  ResultTuple(std::size_t n) {
-    source.reserve(n);
-    target.reserve(n);
-  }
-  pcl::PointCloud<pcl::PointXYZ> source;
-  pcl::PointCloud<pcl::PointXYZ> target;
-};
-
-// template<class PointT>
-struct ResultTupleCorr {
-  ResultTupleCorr(std::size_t n) {
-    src_corrs.reserve(n);
-    target_points.reserve(n);
-  }
-  duna::mapping::SrcCorrespondences src_corrs;
-  pcl::PointCloud<pcl::PointXYZ> target_points;
-};
-
-// template class ResultTuple<pcl::PointXYZ>;
-}  // namespace
 
 namespace kiss_icp {
 
@@ -104,6 +79,7 @@ typename VoxelHashMap<PointT>::PointCloudTTuple VoxelHashMap<PointT>::GetCorresp
 
     return closest_neighbor;
   };
+
   using points_iterator = typename PointCloudT::const_iterator;
   const auto [source, target] = tbb::parallel_reduce(
       // Range
@@ -160,7 +136,7 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
         }
       }
     }
-
+    tbb::info::default_concurrency();
     PointCloudT neighboors;
     neighboors.reserve(27 * max_points_per_voxel_);
     std::for_each(voxels.cbegin(), voxels.cend(), [&](const auto &voxel) {
@@ -187,26 +163,34 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
 
     return closest_neighbor;
   };
-  using points_iterator = typename PointCloudT::const_iterator;
+
+  std::vector<size_t> indices_;
+  indices_.reserve(points.size());
+  for (size_t i = 0; i < points.size(); ++i) {
+    indices_.emplace_back(i);
+  }
+  using indices_iterator = std::vector<size_t>::const_iterator;
   const auto [source_corrs, target] = tbb::parallel_reduce(
       // Range
-      tbb::blocked_range<points_iterator>{points.cbegin(), points.cend()},
+      tbb::blocked_range<indices_iterator>{indices_.cbegin(), indices_.cend()},
       // Identity
-      ResultTupleCorr(points.size()),
+      ResultTupleCorr(indices_.size()),
       // 1st lambda: Parallel computation
-      [max_correspondance_distance, &GetClosestNeighboor](
-          const tbb::blocked_range<points_iterator> &r, ResultTupleCorr res) -> ResultTupleCorr {
+      [max_correspondance_distance, &GetClosestNeighboor, &points](
+          const tbb::blocked_range<indices_iterator> &r, ResultTupleCorr res) -> ResultTupleCorr {
         auto &[src, tgt] = res;
         src.reserve(r.size());
         tgt.reserve(r.size());
-        int src_index = 0;
-        for (const auto &point : r) {
+        for (auto it = r.begin(); it != r.end(); ++it) {
+          const auto &index = *it;
+          const auto &point = points[index];
           PointT closest_neighboors = GetClosestNeighboor(point);
-          if ((closest_neighboors.getVector3fMap() - point.getVector3fMap()).norm() <
-              max_correspondance_distance) {
-            src.emplace_back(src_index);
+          auto d = (closest_neighboors.getVector3fMap() - point.getVector3fMap()).norm();
+          if (d < max_correspondance_distance) {
+            std::cout << "Distance: " << d << std::endl;
+            std::cout << "index: " << index << std::endl;
+            src.emplace_back(index);
             tgt.emplace_back(closest_neighboors);
-            src_index++;
           }
         }
         return res;
@@ -224,7 +208,21 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
   // TODO avoid copy.
 
   typename PointCloudT::Ptr target_ptr = pcl::make_shared<PointCloudT>(target);
-  typename duna::mapping::SrcCorrespondencesPtr src_corrs_ptr = pcl::make_shared<duna::mapping::SrcCorrespondences>(source_corrs);
+  typename duna::mapping::SrcCorrespondencesPtr src_corrs_ptr =
+      pcl::make_shared<duna::mapping::SrcCorrespondences>(source_corrs);
+
+  int index = 0;
+  for (const auto &corr : source_corrs) {
+    std::cout << "Corr index query: " << corr.index_query << std::endl;
+    std::cout << "Correspondence: " << points.points[corr.index_query] << ","
+              << target_ptr->points[index] << std::endl;
+    std::cout << "With a distance of: "
+              << (points.points[corr.index_query].getVector3fMap() -
+                  target_ptr->points[index].getVector3fMap())
+                     .norm()
+              << std::endl;
+    index++;
+  }
   return std::make_tuple(src_corrs_ptr, target_ptr);
 }
 
@@ -282,5 +280,5 @@ void VoxelHashMap<PointT>::RemovePointsFarFromLocation(const PointT &origin) {
   }
 }
 template class VoxelHashMap<pcl::PointXYZ>;
-// template class VoxelHashMap<pcl::PointNormal>;
+template class VoxelHashMap<pcl::PointXYZI>;
 }  // namespace kiss_icp

@@ -36,8 +36,8 @@ class IMap {
   /// @param points PointCloud
   /// @param max_correspondance_distance Maximum distance between correspondences.
   /// @return pcl Correspondenctes structure.
-  virtual CorrespondencesTuple GetCorrespondencesSourceIndices(const PointCloudT& points,
-                                                     double max_correspondance_distance) const = 0;
+  virtual CorrespondencesTuple GetCorrespondencesSourceIndices(
+      const PointCloudT& points, double max_correspondance_distance) const = 0;
 
  protected:
   double maximum_corr_dist_;

@@ -1,17 +1,8 @@
 #pragma once
 
-#include <pcl/common/transforms.h>
-#include <pcl/correspondence.h>
-#include <pcl/point_cloud.h>
-#include <pcl/registration/correspondence_estimation.h>
-#include <pcl/registration/correspondence_rejection.h>
+#include "duna/mapping/IMap.h"
 
-#include "duna_optimizer/logger.h"
-#include "duna_optimizer/model.h"
-#include "duna_optimizer/so3.h"
-
-/* Unified point to plane 6DOF registration model. */
-namespace duna_old {
+namespace duna {
 template <typename PointSource, typename PointTarget, typename Scalar, typename Derived>
 class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derived> {
  public:
@@ -19,31 +10,13 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
   using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
-
-  using PointCloudTarget = pcl::PointCloud<PointTarget>;
-  using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
-  using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
-
-  using KdTree = pcl::search::KdTree<PointTarget>;
-  using KdTreePtr = typename KdTree::Ptr;
-
-  ScanMatchingBase(PointCloudSourceConstPtr source, PointCloudTargetConstPtr target,
-                   KdTreePtr kdtree_target)
-      : source_(source),
-        target_(target),
-        kdtree_target_(kdtree_target),
-        maximum_corr_dist_(std::numeric_limits<double>::max()) {
+  ScanMatchingBase(const PointCloudSourceConstPtr source, const typename IMap<PointTarget>::Ptr map)
+      : map_(map), source_(source), maximum_corr_dist_(std::numeric_limits<double>::max()) {
     if (!source_ || source_->size() == 0)
       duna_optimizer::logger::log_error("No points at source cloud!");
 
-    if (!target_ || target_->size() == 0)
-      duna_optimizer::logger::log_error("No points at target cloud!");
+    if (!map) duna_optimizer::logger::log_error("No map object!");
 
-    if (!kdtree_target_) duna_optimizer::logger::log_error("No target Kdtree!");
-
-    corr_estimator_.setInputTarget(target_);
-    corr_estimator_.setSearchMethodTarget(kdtree_target_,
-                                          true);  // Never recompute.
     transformed_source_.reset(new PointCloudSource);
   }
 
@@ -57,45 +30,20 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
     std::cout << "Applying: " << transform_ << std::endl;
     pcl::transformPointCloud(*source_, *transformed_source_, transform_);
 
-    // duna::logger::log_debug("Updating correspondences... @",
-    // maximum_corr_dist_);
+    // Find Correspondences
+    duna_optimizer::logger::log_debug("Updating correspondences... @ %f", maximum_corr_dist_);
+    const auto &[src_corrs, tgt_corrs_points] =
+        map_->GetCorrespondencesSourceIndices(*transformed_source_, maximum_corr_dist_);
 
-    corr_estimator_.setInputSource(transformed_source_);
-    corr_estimator_.determineCorrespondences(correspondences_, maximum_corr_dist_);
+    this->src_corrs_ = src_corrs;
+    this->tgt_corrs_points_ = tgt_corrs_points;
 
-    duna_optimizer::logger::log_debug("found: %d / %d", correspondences_.size(), source_->size());
-
-    // copy
-    // if (corr_rejectors.size()) {
-    //   pcl::CorrespondencesPtr tmp_corrs(new pcl::Correspondences(correspondences_));
-    //   for (int i = 0; i < corr_rejectors.size(); ++i) {
-    //     duna_optimizer::logger::log_debug("Using rejector: %s",
-    //                                       corr_rejectors[i]->getClassName().c_str());
-    //     corr_rejectors[i]->setInputCorrespondences(tmp_corrs);
-    //     corr_rejectors[i]->getCorrespondences(correspondences_);
-
-    //     duna_optimizer::logger::log_debug("Remaining: %d / %d", correspondences_.size(),
-    //                                       tmp_corrs->size());
-    //     // Modify input for the next iteration
-    //     if (i < corr_rejectors.size() - 1) *tmp_corrs = correspondences_;
-    //   }
-    // }
-
-    // if (correspondences_.size() < 4)
-    //   duna_optimizer::logger::log_debug("Too few correspondences! (%d / %d) ",
-    //                                     correspondences_.size(), source_->size());
-    // overlap_ = (float)correspondences_.size() / (float)source_->size();
+    duna_optimizer::logger::log_debug("found: %d / %d", src_corrs_->size(), source_->size());
   }
 
   inline void setMaximumCorrespondenceDistance(double distance) { maximum_corr_dist_ = distance; }
 
   inline float getOverlap() const { return overlap_; }
-
-  inline void addCorrespondenceRejector(pcl::registration::CorrespondenceRejector::Ptr rejector) {
-    corr_rejectors.push_back(rejector);
-  }
-
-  inline void clearCorrespondenceRejectors() { corr_rejectors.clear(); }
 
   virtual void setup(const Scalar *x) override = 0;
   virtual bool f(const Scalar *x, Scalar *f_x, unsigned int index) override = 0;
@@ -106,13 +54,13 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
 
  protected:
   PointCloudSourceConstPtr source_;
-  PointCloudTargetConstPtr target_;
-  KdTreePtr kdtree_target_;
+  PointCloudSourcePtr tgt_corrs_points_;
+
   PointCloudSourcePtr transformed_source_;
-  pcl::Correspondences correspondences_;
   Eigen::Matrix<Scalar, 4, 4> transform_;
-  pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar> corr_estimator_;
-  std::vector<pcl::registration::CorrespondenceRejector::Ptr> corr_rejectors;
+  typename IMap<PointTarget>::Ptr map_;
+  duna::mapping::SrcCorrespondencesPtr src_corrs_;
+  
 
   float overlap_;
 
@@ -128,4 +76,4 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
     return true;
   }
 };
-}  // namespace duna_old
+}  // namespace duna
