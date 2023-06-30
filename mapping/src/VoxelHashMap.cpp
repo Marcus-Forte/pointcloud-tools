@@ -187,8 +187,8 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
           PointT closest_neighboors = GetClosestNeighboor(point);
           auto d = (closest_neighboors.getVector3fMap() - point.getVector3fMap()).norm();
           if (d < max_correspondance_distance) {
-            std::cout << "Distance: " << d << std::endl;
-            std::cout << "index: " << index << std::endl;
+            // std::cout << "Distance: " << d << std::endl;
+            // std::cout << "index: " << index << std::endl;
             src.emplace_back(index);
             tgt.emplace_back(closest_neighboors);
           }
@@ -211,18 +211,18 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
   typename duna::mapping::SrcCorrespondencesPtr src_corrs_ptr =
       pcl::make_shared<duna::mapping::SrcCorrespondences>(source_corrs);
 
-  int index = 0;
-  for (const auto &corr : source_corrs) {
-    std::cout << "Corr index query: " << corr.index_query << std::endl;
-    std::cout << "Correspondence: " << points.points[corr.index_query] << ","
-              << target_ptr->points[index] << std::endl;
-    std::cout << "With a distance of: "
-              << (points.points[corr.index_query].getVector3fMap() -
-                  target_ptr->points[index].getVector3fMap())
-                     .norm()
-              << std::endl;
-    index++;
-  }
+  // int index = 0;
+  // for (const auto &corr : source_corrs) {
+  //   std::cout << "Corr index query: " << corr.index_query << std::endl;
+  //   std::cout << "Correspondence: " << points.points[corr.index_query] << ","
+  //             << target_ptr->points[index] << std::endl;
+  //   std::cout << "With a distance of: "
+  //             << (points.points[corr.index_query].getVector3fMap() -
+  //                 target_ptr->points[index].getVector3fMap())
+  //                    .norm()
+  //             << std::endl;
+  //   index++;
+  // }
   return std::make_tuple(src_corrs_ptr, target_ptr);
 }
 

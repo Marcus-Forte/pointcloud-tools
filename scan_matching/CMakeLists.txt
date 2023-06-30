@@ -34,7 +34,7 @@ if(BUILD_TESTS)
     add_definitions(-DTEST_DATA_DIR="${DATASET_PATH}")
     set(tst_srcs
     # tst/registration_point2plane.cpp
-    # tst/registration_point2plane3DOF.cpp
+    tst/registration_point2point3DOF.cpp
     tst/registration_point2point.cpp
     # tst/sequence_3dof.cpp
     )
