@@ -83,10 +83,9 @@ class RegistrationPoint2Point3DOF : public ::testing::Test {
 
   // Scanmathc parameters
   double voxel_size = 0.25;
-  double corr_dist = 10;
+  double corr_dist = 0.5;
 };
 
-// PCL fails this one
 TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
   // Arrange
   Eigen::Matrix<TypeParam, 3, 3> rot;
@@ -98,8 +97,8 @@ TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
   Eigen::Matrix<TypeParam, 4, 4> reference_transform_inverse = this->reference_transform.inverse();
   pcl::transformPointCloud(*this->target, *this->source, this->reference_transform);
   duna::IMap<PointT>::Ptr map;
-  map = std::make_shared<duna::KDTreeMap<PointT>>();
-  // map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(this->voxel_size, 100, 1);
+  // map = std::make_shared<duna::KDTreeMap<PointT>>();
+  map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(this->voxel_size, 100, 10);
   map->AddPoints(*this->target);
 
   std::cout << "Voxel hash Map downsample: " << map->Pointcloud()->size() << "/"
@@ -112,7 +111,7 @@ TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
 
   auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 3, 3>(scan_matcher_model,
-                                                                          this->source->size());
+                                                                         this->source->size());
 
   this->optimizer->addCost(cost);
 

@@ -12,7 +12,8 @@ struct SrcCorrespondence {
   int index_query = 0;
 };
 
-using SrcCorrespondences = std::vector<SrcCorrespondence, Eigen::aligned_allocator<SrcCorrespondence>>;
+using SrcCorrespondences =
+    std::vector<SrcCorrespondence, Eigen::aligned_allocator<SrcCorrespondence>>;
 using SrcCorrespondencesPtr = std::shared_ptr<SrcCorrespondences>;
 }  // namespace mapping
 }  // namespace duna

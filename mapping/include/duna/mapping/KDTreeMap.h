@@ -54,7 +54,8 @@ class KDTreeMap : public IMap<PointT> {
 
   virtual CorrespondencesTuple GetCorrespondencesSourceIndices(
       const PointCloudT& points, double max_correspondance_distance) const override {
-    mapping::SrcCorrespondencesPtr correspondences = pcl::make_shared<mapping::SrcCorrespondences>();
+    mapping::SrcCorrespondencesPtr correspondences =
+        pcl::make_shared<mapping::SrcCorrespondences>();
 
     PointCloudTPtr target = pcl::make_shared<PointCloudT>();
 

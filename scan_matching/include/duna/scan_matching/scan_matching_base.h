@@ -60,7 +60,6 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   Eigen::Matrix<Scalar, 4, 4> transform_;
   typename IMap<PointTarget>::Ptr map_;
   duna::mapping::SrcCorrespondencesPtr src_corrs_;
-  
 
   float overlap_;
 
