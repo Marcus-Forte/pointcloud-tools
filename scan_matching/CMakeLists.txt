@@ -9,7 +9,7 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(${COMPONENT_NAME} INTERFACE mapping)
+target_link_libraries(${COMPONENT_NAME} INTERFACE mapping duna::duna-optimizer)
 
 # Component installation.
 install(
@@ -42,7 +42,7 @@ if(BUILD_TESTS)
         get_filename_component(test_src_name ${test_case} NAME_WE)
         message(STATUS ${filename})    
         add_executable(${test_src_name} ${test_case})
-        target_link_libraries(${test_src_name} ${GTEST_LIBRARIES} ${COMPONENT_NAME} duna::duna-optimizer)
+        target_link_libraries(${test_src_name} ${GTEST_LIBRARIES} ${COMPONENT_NAME} )
         gtest_discover_tests(${test_src_name})
     endforeach()
 endif()

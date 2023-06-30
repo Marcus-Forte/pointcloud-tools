@@ -1,5 +1,7 @@
 #pragma once
 
+#include <pcl/point_cloud.h>
+
 #include <Eigen/Core>
 
 #include "duna/mapping/corrsepondence.h"

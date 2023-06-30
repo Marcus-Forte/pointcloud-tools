@@ -1,6 +1,8 @@
 # Project dependencies
 foreach(component ${@PROJECT_NAME@_FIND_COMPONENTS}) 
-    find_package(PCL 1.12 COMPONENTS common io filters) #same as in the parent makefile
-    find_package(OpenMP)
+    find_package(PCL 1.12 COMPONENTS common io filters ) #same as in the parent makefile
+    find_package(tsl-robin-map)
+    find_package(TBB)
+    find_package(duna-optimizer)
     include(${CMAKE_CURRENT_LIST_DIR}/${component}-config.cmake)
 endforeach()

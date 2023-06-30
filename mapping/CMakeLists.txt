@@ -14,7 +14,7 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(${COMPONENT_NAME} tsl::robin_map)
+target_link_libraries(${COMPONENT_NAME} tsl::robin_map ${PCL_LIBRARIES})
 
 # Component installation.
 install(

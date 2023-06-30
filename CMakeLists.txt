@@ -3,7 +3,6 @@ project(duna-pointcloud-tools)
 set(CMAKE_CXX_STANDARD 17)
 find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search visualization)
 find_package(duna-optimizer REQUIRED)
-find_package(OpenMP REQUIRED)
 find_package(tsl-robin-map REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time)
 include(CTest)
@@ -26,7 +25,6 @@ elseif(MSVC)
         add_compile_definitions(_USE_MATH_DEFINES)
 endif()
 
-link_libraries(${PCL_LIBRARIES})
 
 # Protobuf & gRPC definitions
 list (APPEND CMAKE_PREFIX_PATH "/home/marcus/workspace/cpp/grpc/build/install/") # <-- Set this accordingingly!
