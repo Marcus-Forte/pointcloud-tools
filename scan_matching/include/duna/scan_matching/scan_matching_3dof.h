@@ -22,7 +22,7 @@ class ScanMatching3DOFPoint2Point
   using JacobianType = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
 
   ScanMatching3DOFPoint2Point(const PointCloudSourceConstPtr source,
-                              const typename IMap<PointTarget>::Ptr map)
+                              const typename IMap<PointTarget>::ConstPtr map)
       : ScanMatchingBase<PointSource, PointTarget, Scalar, ScanMatching3DOFPoint2Point>(source,
                                                                                         map) {}
 
