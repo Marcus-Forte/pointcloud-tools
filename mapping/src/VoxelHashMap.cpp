@@ -281,4 +281,5 @@ void VoxelHashMap<PointT>::RemovePointsFarFromLocation(const PointT &origin) {
 }
 template class VoxelHashMap<pcl::PointXYZ>;
 template class VoxelHashMap<pcl::PointXYZI>;
+template class VoxelHashMap<pcl::PointXYZINormal>;
 }  // namespace kiss_icp
