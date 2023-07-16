@@ -3,7 +3,9 @@ set (COMPONENT_NAME "mapping")
 message(STATUS "Processing component: ${CMAKE_CURRENT_LIST_DIR}")
 
 set(SRCS 
-src/voxel_hashing_map.cpp)
+src/voxel_hashing_map.cpp
+src/VoxelHashMap.cpp
+)
 
 add_library(${COMPONENT_NAME} SHARED ${SRCS})
 
@@ -11,6 +13,8 @@ target_include_directories(${COMPONENT_NAME} PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
+
+target_link_libraries(${COMPONENT_NAME} tsl::robin_map ${PCL_LIBRARIES})
 
 # Component installation.
 install(
@@ -29,7 +33,6 @@ install(
 
 if(BUILD_TESTS)
     find_package(GTest REQUIRED)
-    enable_testing()
     include(GoogleTest)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
     set(tst_srcs

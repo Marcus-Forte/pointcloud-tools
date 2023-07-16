@@ -1,4 +1,4 @@
-#include "voxel_hashing_map.h"
+#include "duna/mapping/voxel_hashing_map.h"
 
 #include <iostream>
 #include <optional>
@@ -20,6 +20,37 @@ void VoxelHashMap<PointT>::insertPoint(const PointT& pt) {
   } else {
     map_[inv_pt].push_back(pt);
   }
+}
+
+template <class PointT>
+void VoxelHashMap<PointT>::insertPointCloud(const PointXYZBucket& cloud) {
+  // Convert to integer leaf.
+  for (const auto& pt : cloud) {
+    IPointXYZ inv_pt{static_cast<int>(pt.x * inverse_leaf_size_),
+                     static_cast<int>(pt.y * inverse_leaf_size_),
+                     static_cast<int>(pt.z * inverse_leaf_size_)};
+    if (map_.find(inv_pt) != map_.end()) {
+      auto& bucket = map_.at(inv_pt);
+      if (bucket.size() < point_bucket_size_) {
+        bucket.push_back(pt);
+      }
+    } else {
+      map_[inv_pt].push_back(pt);
+    }
+  }
+}
+
+template <class PointT>
+typename VoxelHashMap<PointT>::PointXYZBucketPtr
+VoxelHashMap<PointT>::createPointCloudRepresentation() const {
+  VoxelHashMap<PointT>::PointXYZBucketPtr cloud_representation =
+      pcl::make_shared<VoxelHashMap<PointT>::PointXYZBucket>();
+  for (const auto& bucket : map_) {
+    for (const auto& pt : bucket.second) {
+      cloud_representation->push_back(pt);
+    }
+  }
+  return cloud_representation;
 }
 
 template <class PointT>

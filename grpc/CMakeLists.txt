@@ -1,7 +1,7 @@
 set (COMPONENT_NAME "grpc-interface")
 
 find_package(absl PATHS ${GRPC_INSTALL_PATH} CONFIG REQUIRED)
-find_package(Protobuf REQUIRED)
+find_package(Protobuf CONFIG REQUIRED)
 message(STATUS "Using protobuf ${Protobuf_VERSION}")
 find_package(gRPC PATHS ${GRPC_INSTALL_PATH} CONFIG REQUIRED)
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
@@ -41,7 +41,7 @@ target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-conversions fil
 # ProtovsPCL
 add_executable(proto_vs_pcl
 proto_vs_pcl.cpp)
-target_link_libraries(proto_vs_pcl pointcloud_proto_lib)
+target_link_libraries(proto_vs_pcl pointcloud_proto_lib ${PCL_LIBRARIES})
 
 # Component installation.
 install(
