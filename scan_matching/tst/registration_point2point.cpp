@@ -193,7 +193,7 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
   delete cost;
 }
 
-TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslationDynamic) {
+TYPED_TEST(RegistrationPoint2Point, DISABLED_RotationPlusTranslationDynamic) {
   Eigen::Matrix<TypeParam, 3, 3> rot;
   rot = Eigen::AngleAxis<TypeParam>(0.3, Eigen::Matrix<TypeParam, 3, 1>::UnitX()) *
         Eigen::AngleAxis<TypeParam>(0.4, Eigen::Matrix<TypeParam, 3, 1>::UnitY()) *

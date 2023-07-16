@@ -36,7 +36,7 @@ if(BUILD_TESTS)
     # tst/registration_point2plane.cpp
     tst/registration_point2point3DOF.cpp
     tst/registration_point2point.cpp
-    # tst/sequence_3dof.cpp
+    tst/sequence_3dof.cpp
     )
     foreach(test_case ${tst_srcs})
         get_filename_component(test_src_name ${test_case} NAME_WE)

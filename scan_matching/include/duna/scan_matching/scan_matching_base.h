@@ -1,9 +1,10 @@
 #pragma once
 
-#include "duna/mapping/IMap.h"
-#include <duna_optimizer/model.h>
 #include <duna_optimizer/logger.h>
+#include <duna_optimizer/model.h>
 #include <pcl/common/transforms.h>
+
+#include "duna/mapping/IMap.h"
 
 namespace duna {
 template <typename PointSource, typename PointTarget, typename Scalar, typename Derived>
