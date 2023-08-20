@@ -14,7 +14,8 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
   using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
-  ScanMatchingBase(const PointCloudSourceConstPtr source, const typename IMap<PointTarget>::ConstPtr map)
+  ScanMatchingBase(const PointCloudSourceConstPtr source,
+                   const typename IMap<PointTarget>::ConstPtr map)
       : map_(map), source_(source), maximum_corr_dist_(std::numeric_limits<double>::max()) {
     if (!source_ || source_->size() == 0)
       duna_optimizer::logger::log_error("No points at source cloud!");
@@ -43,6 +44,8 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
     this->tgt_corrs_points_ = tgt_corrs_points;
 
     duna_optimizer::logger::log_debug("found: %d / %d", src_corrs_->size(), source_->size());
+
+    overlap_ = static_cast<float>(src_corrs_->size()) / static_cast<float>(source_->size());
   }
 
   inline void setMaximumCorrespondenceDistance(double distance) { maximum_corr_dist_ = distance; }

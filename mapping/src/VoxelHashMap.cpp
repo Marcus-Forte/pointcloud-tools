@@ -136,7 +136,7 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
         }
       }
     }
-    tbb::info::default_concurrency();
+
     PointCloudT neighboors;
     neighboors.reserve(27 * max_points_per_voxel_);
     std::for_each(voxels.cbegin(), voxels.cend(), [&](const auto &voxel) {
