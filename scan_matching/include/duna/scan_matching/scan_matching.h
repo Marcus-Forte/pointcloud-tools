@@ -30,7 +30,7 @@ class ScanMatching6DOFPoint2Point
 
   void setup(const Scalar *x) override { so3::convert6DOFParameterToMatrix(x, transform_); }
 
-  bool f(const Scalar *x, Scalar *f_x, unsigned int index) override {
+  bool f(const Scalar *x, Scalar *f_x, unsigned int index) const override {
     if (index >= src_corrs_->size()) return false;
 
     const PointSource &src_pt = source_->points[(*src_corrs_)[index].index_query];
@@ -53,7 +53,7 @@ class ScanMatching6DOFPoint2Point
     return true;
   }
 
-  virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian, unsigned int index) override {
+  virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian, unsigned int index) const override {
     if (index >= src_corrs_->size()) return false;
 
     const PointSource &src_pt = source_->points[(*src_corrs_)[index].index_query];

@@ -53,8 +53,8 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   inline float getOverlap() const { return overlap_; }
 
   virtual void setup(const Scalar *x) override = 0;
-  virtual bool f(const Scalar *x, Scalar *f_x, unsigned int index) override = 0;
-  virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian, unsigned int index) override {
+  virtual bool f(const Scalar *x, Scalar *f_x, unsigned int index) const override = 0;
+  virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian, unsigned int index) const override {
     throw duna_optimizer::Exception("Non implemented jacobian model function `f_df` being used.");
     return false;
   }
