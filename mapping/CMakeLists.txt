@@ -3,7 +3,6 @@ set (COMPONENT_NAME "mapping")
 message(STATUS "Processing component: ${CMAKE_CURRENT_LIST_DIR}")
 
 set(SRCS 
-src/voxel_hashing_map.cpp
 src/VoxelHashMap.cpp
 )
 
@@ -35,13 +34,9 @@ if(BUILD_TESTS)
     find_package(GTest REQUIRED)
     include(GoogleTest)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
-    set(tst_srcs
-    tst/tst_insert.cpp)
-    foreach(test_case ${tst_srcs})
-        get_filename_component(test_src_name ${test_case} NAME_WE)
-        message(STATUS ${filename})    
-        add_executable(${test_src_name} ${test_case})
-        target_link_libraries(${test_src_name} ${COMPONENT_NAME} ${GTEST_LIBRARIES})
-        gtest_discover_tests(${test_src_name})
-    endforeach()
+
+    add_executable(mapping_tests 
+    tst/test_voxel_mapping.cpp)
+    target_link_libraries(mapping_tests PRIVATE ${COMPONENT_NAME} GTest::gtest_main)
+    gtest_discover_tests(mapping_tests)
 endif()
