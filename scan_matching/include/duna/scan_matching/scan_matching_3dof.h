@@ -51,7 +51,8 @@ class ScanMatching3DOFPoint2Point
     return true;
   }
 
-  virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian, unsigned int index) const override {
+  virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian,
+                    unsigned int index) const override {
     if (index >= src_corrs_->size()) return false;
 
     const PointSource &src_pt = source_->points[(*src_corrs_)[index].index_query];

@@ -253,19 +253,32 @@ void VoxelHashMap<PointT>::Update(const PointCloudT &points, const PointT &origi
 //     const Eigen::Vector3d &origin = pose.translation();
 //     Update(points_transformed, origin);
 // }
+
+/// @brief Add points to the hash map. If there is "room" in the voxel block, the point will
+/// be added.
+/// @tparam PointT
+/// @param points points to add to the hash map.
+/// @param new_points (optional) points added to the hash map are added to this list.
 template <class PointT>
-void VoxelHashMap<PointT>::AddPoints(const PointCloudT &points) {
+void VoxelHashMap<PointT>::AddPoints(const PointCloudT &points, PointCloudTPtr new_points) {
   std::for_each(points.cbegin(), points.cend(), [&](const auto &point) {
     auto voxel = Voxel((point.getVector3fMap() / voxel_size_).template cast<int>());
     auto search = map_.find(voxel);
+    bool new_point_inserted = false;
+
     if (search != map_.end()) {
       auto &voxel_block = search.value();
-      voxel_block.AddPoint(point);
+      new_point_inserted = voxel_block.AddPoint(point);
+
     } else {
       VoxelBlock new_block;
-      new_block.AddPoint(point);
+      new_point_inserted = new_block.AddPoint(point);
       new_block.num_points_ = max_points_per_voxel_;
       map_.insert({voxel, new_block});
+    }
+
+    if (new_point_inserted && new_points) {
+      new_points->emplace_back(point);
     }
   });
 }

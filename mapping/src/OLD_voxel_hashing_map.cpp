@@ -1,7 +1,7 @@
-#include "duna/mapping/voxel_hashing_map.h"
-
 #include <iostream>
 #include <optional>
+
+#include "duna/mapping/voxel_hashing_map.h"
 
 template <class PointT>
 void VoxelHashMap<PointT>::insertPoint(const PointT& pt) {

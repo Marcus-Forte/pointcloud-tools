@@ -23,7 +23,8 @@ class IMap {
 
   /// @brief Add points to the map.
   /// @param points pointcloud with points to be added.
-  virtual void AddPoints(const pcl::PointCloud<PointT>& points) = 0;
+  virtual void AddPoints(const pcl::PointCloud<PointT>& points,
+                         PointCloudTPtr added_points = 0) = 0;
   /// @brief Get a point cloud representation of the map.
   /// @return
   virtual PointCloudTPtr Pointcloud() const = 0;

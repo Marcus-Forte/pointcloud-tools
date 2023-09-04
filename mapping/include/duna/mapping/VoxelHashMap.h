@@ -52,15 +52,19 @@ class VoxelHashMap : public duna::IMap<PointT> {
     // buffer of points with a max limit of n_points
     PointCloudT points;
     int num_points_;
-    inline void AddPoint(const PointT &point) {
-      if (points.size() < static_cast<size_t>(num_points_)) points.push_back(point);
+    inline bool AddPoint(const PointT &point) {
+      if (points.size() < static_cast<size_t>(num_points_)) {
+        points.push_back(point);
+        return true;
+      }
+      return false;
     }
   };
   struct VoxelHash {
     size_t operator()(const Voxel &voxel) const {
       const uint32_t *vec = reinterpret_cast<const uint32_t *>(voxel.data());
       return ((1 << 20) - 1) & (vec[0] * 73856093 ^ vec[1] * 19349669 ^ vec[2] * 83492791);
-    } 
+    }
   };
 
   /// @brief
@@ -84,7 +88,7 @@ class VoxelHashMap : public duna::IMap<PointT> {
   inline bool Empty() const { return map_.empty(); }
   void Update(const PointCloudT &points, const PointT &origin);
   // void Update(const std::vector<Eigen::Vector3d> &points, const Sophus::SE3d &pose);
-  void AddPoints(const PointCloudT &points) override;
+  void AddPoints(const PointCloudT &points, PointCloudTPtr added_points = 0) override;
   void RemovePointsFarFromLocation(const PointT &origin);
   PointCloudTPtr Pointcloud() const override;
 

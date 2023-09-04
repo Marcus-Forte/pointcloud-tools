@@ -5,7 +5,6 @@ find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search visualization
 find_package(duna-optimizer REQUIRED)
 find_package(tsl-robin-map REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time)
-include(CTest)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING
@@ -27,7 +26,6 @@ endif()
 
 
 # Protobuf & gRPC definitions
-list (APPEND CMAKE_PREFIX_PATH "/home/marcus/workspace/cpp/grpc/build/install/") # <-- Set this accordingingly!
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Declare options
