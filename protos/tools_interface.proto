@@ -1,0 +1,47 @@
+syntax = "proto3";
+package PointCloudTools;
+
+enum MetricOperation {
+    AREA = 0;
+    VOLUME = 1;
+}
+
+enum FilterOperation {
+    VOXEL_GRID = 0;
+}
+
+message metricServiceRequest {
+    // input_file require full path
+    string input_file = 1; // file
+    MetricOperation operation = 2; // operation
+    repeated Point3D points = 3; // point list
+}
+
+message subsetFilterRequest {
+    string input_file = 1;
+    FilterOperation operation = 2;
+}
+
+message numericResponse {
+    double metric = 1; 
+}
+
+message Point3D {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message PointIndices {
+    repeated uint64 indices = 1;
+}
+
+service MetricServices 
+{
+    rpc computeMetric (metricServiceRequest) returns (numericResponse) {}
+}
+
+service FilterServices
+{
+    rpc applySubsetFilter(subsetFilterRequest) returns (PointIndices) {}
+}

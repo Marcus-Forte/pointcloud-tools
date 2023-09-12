@@ -6,7 +6,6 @@
 #include <duna_optimizer/levenberg_marquadt.h>
 #include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
-
 #include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/passthrough.h>

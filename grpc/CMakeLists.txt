@@ -20,32 +20,20 @@ endif()
 include(gen_proto.cmake)
 
 # generate_proto("../protos/helloworld.proto")
-generate_proto("../protos/pointcloud.proto")
+generate_proto("../protos/tools_interface.proto")
 
 include_directories(include)
 
-add_library(${COMPONENT_NAME}-conversions SHARED
-grpc_conversions.cpp)
-target_link_libraries(${COMPONENT_NAME}-conversions pointcloud_proto_lib
-)
-target_include_directories(${COMPONENT_NAME}-conversions PUBLIC ${PCL_INCLUDE_DIRS})
+add_library(${COMPONENT_NAME}-lib metric_services.cpp)
+target_link_libraries(${COMPONENT_NAME}-lib tools_interface_proto_lib)
 
 # Point cloud processing server
-add_executable(${COMPONENT_NAME}-server grpc_server.cpp)
-target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-conversions filters)
-
-# Test client
-# add_executable(pc_client pc_client.cpp)
-# target_link_libraries(pc_client ${COMPONENT_NAME}-conversions)
-
-# ProtovsPCL
-add_executable(proto_vs_pcl
-proto_vs_pcl.cpp)
-target_link_libraries(proto_vs_pcl pointcloud_proto_lib ${PCL_LIBRARIES})
+add_executable(${COMPONENT_NAME}-server tools_grpc_server.cpp)
+target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib)
 
 # Component installation.
 install(
-TARGETS ${COMPONENT_NAME}-conversions pointcloud_proto_lib
+TARGETS ${COMPONENT_NAME}-server
 EXPORT ${COMPONENT_NAME}-config
 )
 
