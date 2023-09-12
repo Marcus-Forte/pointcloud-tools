@@ -29,20 +29,20 @@ install(
 if(BUILD_TESTS)
     find_package(GTest REQUIRED)
     include(GoogleTest)
+    enable_testing()
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
     get_filename_component(DATASET_PATH tst/data/ REALPATH)
     add_definitions(-DTEST_DATA_DIR="${DATASET_PATH}")
     set(tst_srcs
     # tst/registration_point2plane.cpp
+    tst/registration_point2point2d.cpp
     tst/registration_point2point3DOF.cpp
     tst/registration_point2point.cpp
     tst/sequence_3dof.cpp
+    tst/test_main.cpp
     )
-    foreach(test_case ${tst_srcs})
-        get_filename_component(test_src_name ${test_case} NAME_WE)
-        message(STATUS ${filename})    
-        add_executable(${test_src_name} ${test_case})
-        target_link_libraries(${test_src_name} ${GTEST_LIBRARIES} ${COMPONENT_NAME} )
-        gtest_discover_tests(${test_src_name})
-    endforeach()
+
+    add_executable(tst_scan_matching ${tst_srcs})
+    target_link_libraries(tst_scan_matching ${COMPONENT_NAME} GTest::gtest)
+    gtest_discover_tests(tst_scan_matching)
 endif()

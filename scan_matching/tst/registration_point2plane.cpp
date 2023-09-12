@@ -22,11 +22,6 @@ TYPED_TEST_SUITE(RegistrationPoint2Plane, ScalarTypes);
 
 #define TOLERANCE 1e-2
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
-
 template <typename Scalar>
 class RegistrationPoint2Plane : public ::testing::Test {
  public:

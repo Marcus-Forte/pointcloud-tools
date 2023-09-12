@@ -27,7 +27,7 @@ class ScanMatching3DOFPoint2Point
                                                                                         map) {}
 
   virtual ~ScanMatching3DOFPoint2Point() = default;
-
+  // alpha, beta, gamma
   void setup(const Scalar *x) override { so3::convert3DOFParameterToMatrix(x, transform_); }
 
   bool f(const Scalar *x, Scalar *f_x, unsigned int index) const override {

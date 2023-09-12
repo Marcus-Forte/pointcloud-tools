@@ -1,8 +1,8 @@
-#include <duna_optimizer/cost_function_analytical_dynamic.h>
+#include <duna_optimizer/cost_function_analytical_dyn.h>
 #include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/cost_function_numerical_dynamic.h>
+#include <duna_optimizer/cost_function_numerical_dyn.h>
 #include <duna_optimizer/levenberg_marquadt.h>
-#include <duna_optimizer/levenberg_marquadt_dynamic.h>
+#include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
 #include <getopt.h>
 #include <gtest/gtest.h>
@@ -19,6 +19,8 @@
 #include "duna/scan_matching/scan_matching_3dof.h"
 #include "test_visualization.h"
 
+extern bool g_visualize;
+
 using PointT = pcl::PointXYZI;
 using PointCloutT = pcl::PointCloud<PointT>;
 
@@ -26,23 +28,7 @@ using ScalarTypes = ::testing::Types<double, float>;
 
 TYPED_TEST_SUITE(RegistrationPoint2Point3DOF, ScalarTypes);
 
-bool g_visualize = false;
-
 #define TOLERANCE 1e-2
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-
-  // Check -v option on the first argument only.. getopt does not work well with gtest.
-  if (argc > 1) {
-    const auto opt = std::string(argv[1]);
-    if (opt == "-v") {
-      std::cout << "Visualization turned on!\n";
-      g_visualize = true;
-    }
-  }
-  return RUN_ALL_TESTS();
-}
 
 template <typename Scalar>
 class RegistrationPoint2Point3DOF : public ::testing::Test {

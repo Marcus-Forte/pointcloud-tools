@@ -1,13 +1,12 @@
 #define PCL_NO_PRECOMPILE
 #include <duna_optimizer/cost_function_analytical.h>
-#include <duna_optimizer/cost_function_analytical_dynamic.h>
+#include <duna_optimizer/cost_function_analytical_dyn.h>
 #include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/cost_function_numerical_dynamic.h>
+#include <duna_optimizer/cost_function_numerical_dyn.h>
 #include <duna_optimizer/levenberg_marquadt.h>
-#include <duna_optimizer/levenberg_marquadt_dynamic.h>
+#include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
 
-// #include <duna/models/scan_matching.h>
 #include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/passthrough.h>
@@ -32,12 +31,6 @@
 
 using PointT = pcl::PointXYZI;
 using PointCloudT = pcl::PointCloud<PointT>;
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-
-  return RUN_ALL_TESTS();
-}
 
 template <typename Scalar>
 class SequenceRegistration : public ::testing::Test {

@@ -32,7 +32,7 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
     setup(x);
 
     duna_optimizer::logger::log_debug("Transforming");
-    std::cout << "Applying: " << transform_ << std::endl;
+
     pcl::transformPointCloud(*source_, *transformed_source_, transform_);
 
     // Find Correspondences
