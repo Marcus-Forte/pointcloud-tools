@@ -25,11 +25,11 @@ generate_proto("../protos/tools_interface.proto")
 include_directories(include)
 
 add_library(${COMPONENT_NAME}-lib metric_services.cpp)
-target_link_libraries(${COMPONENT_NAME}-lib tools_interface_proto_lib)
+target_link_libraries(${COMPONENT_NAME}-lib tools_interface_proto_lib metrics)
 
 # Point cloud processing server
 add_executable(${COMPONENT_NAME}-server tools_grpc_server.cpp)
-target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib)
+target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib )
 
 # Component installation.
 install(

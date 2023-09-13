@@ -12,7 +12,7 @@ using grpc::ServerContext;
 using grpc::Status;
 
 int main() {
-  std::string server_address = "0.0.0.0:10001";
+  std::string server_address = "0.0.0.0:50051";
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 
