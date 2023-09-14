@@ -7,8 +7,10 @@ namespace duna {
 namespace metrics {
 using PointT = pcl::PointXYZ;
 
-/// @brief
-/// @return
+/// @brief Computes the area over the given points.
+/// Requires at least 3 points.
+/// @param input 
+/// @return 
 double computeArea(pcl::PointCloud<pcl::PointXYZ>::ConstPtr input);
 
 double computeVolume(pcl::PointCloud<pcl::PointXYZ>::ConstPtr input);

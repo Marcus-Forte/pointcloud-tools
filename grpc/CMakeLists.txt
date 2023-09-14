@@ -16,19 +16,20 @@ if(NOT _GRPC_CPP_PLUGIN_EXECUTABLE)
     message (FATAL_ERROR "grpc_cpp_plugin not found")
 endif()
 
-# Set Proto file
+# Proto gereration function
 include(gen_proto.cmake)
 
-# generate_proto("../protos/helloworld.proto")
-generate_proto("../protos/tools_interface.proto")
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/tools_interface.proto")
 
 include_directories(include)
 
-add_library(${COMPONENT_NAME}-lib metric_services.cpp)
-target_link_libraries(${COMPONENT_NAME}-lib tools_interface_proto_lib metrics)
+add_library(${COMPONENT_NAME}-lib 
+src/metric_services.cpp
+src/filter_services.cpp
+src/las_conversions.cpp)
+target_link_libraries(${COMPONENT_NAME}-lib tools_interface_proto_lib metrics las)
 
-# Point cloud processing server
-add_executable(${COMPONENT_NAME}-server tools_grpc_server.cpp)
+add_executable(${COMPONENT_NAME}-server src/tools_grpc_server.cpp)
 target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib )
 
 # Component installation.

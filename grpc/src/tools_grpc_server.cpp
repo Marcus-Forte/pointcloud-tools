@@ -4,6 +4,7 @@
 #include <grpcpp/grpcpp.h>
 
 #include "metric_services.h"
+#include "filter_services.h"
 
 using grpc::Channel;
 using grpc::Server;
@@ -17,10 +18,12 @@ int main() {
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 
   MetricServicesImpl service;
+  FilterServicesImpl filter_service;
 
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
+  builder.RegisterService(&filter_service);
 
   std::unique_ptr<Server> server(builder.BuildAndStart());
 

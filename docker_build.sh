@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t marcusforte/duna-cloud-processing .
+docker build -t duna-pointcloud-tools .
