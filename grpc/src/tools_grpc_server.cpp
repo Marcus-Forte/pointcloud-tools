@@ -3,8 +3,8 @@
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include <grpcpp/grpcpp.h>
 
-#include "metric_services.h"
 #include "filter_services.h"
+#include "metric_services.h"
 
 using grpc::Channel;
 using grpc::Server;

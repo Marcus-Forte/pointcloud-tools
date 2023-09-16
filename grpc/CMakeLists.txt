@@ -19,15 +19,42 @@ endif()
 # Proto gereration function
 include(gen_proto.cmake)
 
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/common.proto")
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/metrics.proto")
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/filters.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/tools_interface.proto")
 
 include_directories(include)
+
+add_library(${COMPONENT_NAME}-proto-lib
+${CMAKE_CURRENT_BINARY_DIR}/common.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/common.grpc.pb.cc
+
+${CMAKE_CURRENT_BINARY_DIR}/metrics.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/metrics.grpc.pb.cc
+
+${CMAKE_CURRENT_BINARY_DIR}/filters.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/filters.grpc.pb.cc
+
+${CMAKE_CURRENT_BINARY_DIR}/tools_interface.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/tools_interface.grpc.pb.cc
+)
+
+target_link_libraries(${COMPONENT_NAME}-proto-lib
+${_REFLECTION}
+${_GRPC_GRPCPP}
+${_PROTOBUF_LIBPROTOBUF}
+)
 
 add_library(${COMPONENT_NAME}-lib 
 src/metric_services.cpp
 src/filter_services.cpp
 src/las_conversions.cpp)
-target_link_libraries(${COMPONENT_NAME}-lib tools_interface_proto_lib metrics las)
+
+target_link_libraries(${COMPONENT_NAME}-lib 
+${COMPONENT_NAME}-proto-lib
+metrics 
+las)
 
 add_executable(${COMPONENT_NAME}-server src/tools_grpc_server.cpp)
 target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib )
