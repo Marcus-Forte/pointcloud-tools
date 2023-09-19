@@ -8,22 +8,10 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: duna-runner
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Build
         run: ./docker_build.sh
-
-      # - name: Create docker test network
-      #   run: docker network create test_user_db
-
-      # - name: Run database container
-      #   run: docker run -d --name db --network test_user_db --env MYSQL_ROOT_PASSWORD=test_pwd mysql
-
-      # - name: Wait for database to start...
-      #   run: sleep 10
-
-      # - name: Tests
-      #   run: docker run --network=host duna-web-platform-users npm run test
