@@ -15,23 +15,23 @@ RUN git clone --recurse-submodules -b v1.50.0 --depth 1 --shallow-submodules htt
 
 RUN mkdir -p /deps/grpc/build && cd /deps/grpc/build && \
     cmake .. -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF && \
-    make install -j16
+    make install -j$(nproc)
 
 RUN mkdir -p /deps/pcl/build && cd /deps/pcl/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF -DWITH_OPENGL=OFF && \
-    make -j16 install
+    make -j$(nproc) install
 
 RUN mkdir -p /deps/oneTBB/build && cd /deps/oneTBB/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release -DTBB_TEST=OFF && \
-    make -j4 install
+    make -j$(nproc) install
 
 RUN mkdir -p /deps/robin-map/build && cd /deps/robin-map/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release && \
-    make -j4 install
+    make -j$(nproc) install
 
 RUN mkdir -p /deps/duna-optimizer/build && cd /deps/duna-optimizer/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j4 install
+    make -j$(nproc) install
 
 RUN rm -rf /deps
 COPY . /app
@@ -39,7 +39,7 @@ WORKDIR /app
 # Build application.
 RUN mkdir build && cd build && \
     cmake .. -DBUILD_GRPC=ON && \
-    make -j4
+    make -j$(nproc)
 
 # Run server.
 CMD "/app/build/grpc/grpc-interface-server"
