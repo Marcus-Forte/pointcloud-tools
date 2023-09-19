@@ -131,8 +131,6 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
 
   PointCloudT::Ptr output(new PointCloudT);
 
-  duna_optimizer::logger::setGlobalVerbosityLevel(duna_optimizer::L_DEBUG);
-
   // Copy full map cloud
   *HD_cloud = *this->target_;
   double total_reg_time = 0.0;
