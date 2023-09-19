@@ -6,7 +6,6 @@
 #include <duna_optimizer/levenberg_marquadt.h>
 #include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
-
 #include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/passthrough.h>
@@ -131,8 +130,6 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
   map->AddPoints(*this->target_);
 
   PointCloudT::Ptr output(new PointCloudT);
-
-  duna_optimizer::logger::setGlobalVerbosityLevel(duna_optimizer::L_DEBUG);
 
   // Copy full map cloud
   *HD_cloud = *this->target_;

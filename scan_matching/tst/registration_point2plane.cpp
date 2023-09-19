@@ -44,9 +44,6 @@ class RegistrationPoint2Plane : public ::testing::Test {
     ne.setSearchMethod(target_kdtree);
     ne.setKSearch(5);
     ne.compute(*target);
-
-    duna_optimizer::logger::setGlobalVerbosityLevel(duna_optimizer::L_DEBUG);
-
     optimizer.setMaximumIterations(50);
   }
 

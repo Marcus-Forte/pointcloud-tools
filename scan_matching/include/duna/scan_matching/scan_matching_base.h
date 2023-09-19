@@ -17,10 +17,12 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   ScanMatchingBase(const PointCloudSourceConstPtr source,
                    const typename IMap<PointTarget>::ConstPtr map)
       : map_(map), source_(source), maximum_corr_dist_(std::numeric_limits<double>::max()) {
-    if (!source_ || source_->size() == 0)
-      duna_optimizer::logger::log_error("No points at source cloud!");
+    logger_ = std::make_shared<duna::Logger>(std::cout, duna::Logger::L_ERROR, "ScanMatchingBase");
 
-    if (!map) duna_optimizer::logger::log_error("No map object!");
+    if (!source_ || source_->size() == 0)
+      logger_->log(duna::Logger::L_ERROR, "No points as source cloud!");
+
+    if (!map) logger_->log(duna::Logger::L_ERROR, "No map opbject!");
 
     transformed_source_.reset(new PointCloudSource);
   }
@@ -28,22 +30,22 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   virtual ~ScanMatchingBase() = default;
 
   virtual void update(const Scalar *x) override {
-    duna_optimizer::logger::log_debug("Update");
+    logger_->log(duna::Logger::L_DEBUG, "Update");
     setup(x);
 
-    duna_optimizer::logger::log_debug("Transforming");
+    logger_->log(duna::Logger::L_DEBUG, "Transforming");
 
     pcl::transformPointCloud(*source_, *transformed_source_, transform_);
 
     // Find Correspondences
-    duna_optimizer::logger::log_debug("Updating correspondences... @ %f", maximum_corr_dist_);
+    logger_->log(duna::Logger::L_DEBUG, "Updating correspondences... @ ", maximum_corr_dist_);
     const auto &[src_corrs, tgt_corrs_points] =
         map_->GetCorrespondencesSourceIndices(*transformed_source_, maximum_corr_dist_);
 
     this->src_corrs_ = src_corrs;
     this->tgt_corrs_points_ = tgt_corrs_points;
 
-    duna_optimizer::logger::log_debug("found: %d / %d", src_corrs_->size(), source_->size());
+    logger_->log(duna::Logger::L_DEBUG, "Found: ", src_corrs->size(), '/', source_->size());
 
     overlap_ = static_cast<float>(src_corrs_->size()) / static_cast<float>(source_->size());
   }
@@ -82,5 +84,7 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
     }
     return true;
   }
+
+  std::shared_ptr<duna::Logger> logger_;
 };
 }  // namespace duna

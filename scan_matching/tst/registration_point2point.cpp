@@ -56,8 +56,6 @@ class RegistrationPoint2Point : public ::testing::Test {
     pcl::transformPointCloud(*target, *target, tf);
 
     this->optimizer->setMaximumIterations(100);
-
-    duna_optimizer::logger::setGlobalVerbosityLevel(duna_optimizer::L_DEBUG);
   }
 
  protected:
