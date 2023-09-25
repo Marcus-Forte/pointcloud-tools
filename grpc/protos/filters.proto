@@ -1,0 +1,16 @@
+syntax = "proto3";
+package PointCloudTools;
+
+import "common.proto";
+
+/* FILTERS */
+
+enum FilterOperation {
+    VOXEL_GRID = 0;
+}
+
+message subsetFilterRequest {
+    string input_file = 1;
+    FilterOperation operation = 2;
+    repeated float parameters = 3; 
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package PointCloudTools;
+
+import "common.proto";
+
+/* METRICS */
+
+enum MetricOperation {
+    AREA = 0;
+    VOLUME = 1;
+}
+
+message metricServiceRequest {
+    MetricOperation operation = 1; // operation
+    repeated Point3D points = 2; // point list
+}

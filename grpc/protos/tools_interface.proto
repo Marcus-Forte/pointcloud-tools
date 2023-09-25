@@ -1,0 +1,28 @@
+syntax = "proto3";
+package PointCloudTools;
+
+// import "google/protobuf/empty.proto";
+
+import "common.proto";
+import "metrics.proto";
+import "filters.proto";
+
+service FilterServices {
+    rpc applySubsetFilter(subsetFilterRequest) returns (stringResponse) {}
+}
+
+service MetricServices {
+    rpc computeMetric (metricServiceRequest) returns (numericResponse) {}
+}
+
+/* PHOTO RECON */
+
+message ReconstructImageRequest {
+    repeated string locations = 1;
+}
+message ReconstructImageResponse {
+    string message = 1;
+}
+service PhotogrammetryServices {
+    rpc reconstructFromImages(ReconstructImageRequest) returns (ReconstructImageResponse) {}
+}

@@ -1,0 +1,4 @@
+[submodule "third_party/libLAS"]
+	path = third_party/libLAS
+	url = https://github.com/libLAS/libLAS.git
+	branch = master

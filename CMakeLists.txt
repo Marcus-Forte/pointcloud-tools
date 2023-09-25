@@ -34,26 +34,6 @@ option(BUILD_GRPC "Build GRPC API functions" OFF)
 option(BUILD_MAPPING "Build mapping " ON)
 option(BUILD_SCANMATCHING "Build scan matching " ON)
 option(BUILD_TESTS "Build tests" OFF)
-# OLD
-# include_directories(include)
-# add_library(global_registrator
-# lib/global_registration)
-
-# add_library(asl_parser 
-# lib/asl_parser.cpp)
-
-
-# add_executable(keypoint src/keypoint.cpp)
-# add_executable(keypoint_registration src/keypoint_registration.cpp)
-
-# target_link_libraries(keypoint asl_parser global_registrator)
-# target_link_libraries(keypoint_registration asl_parser global_registrator )
-
-
-# # Batch processors
-# add_executable(batch_voxel src/batch_voxel.cpp)
-# add_executable(batch_sor src/batch_sor.cpp )
-# add_executable(batch_ror src/batch_ror.cpp )
 
 include(GNUInstallDirs)
 if (BUILD_FILTERS)
@@ -61,6 +41,11 @@ add_subdirectory(filters)
 endif()
 if(BUILD_GRPC)
 add_subdirectory(grpc)
+# libLAS confi
+option(WITH_GEOTIFF "" OFF)
+option(WITH_GDAL "" OFF)
+option(WITH_TESTS "" OFF)
+add_subdirectory(third_party/libLAS)
 endif()
 if(BUILD_MAPPING)
 add_subdirectory(mapping)
@@ -69,9 +54,7 @@ if(BUILD_SCANMATCHING)
 add_subdirectory(scan_matching)
 endif()
 
-if(BUILD_TESTS)
-
-endif()
+add_subdirectory(metrics)
 
 # Filters
 configure_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in ${PROJECT_NAME}-config.cmake
