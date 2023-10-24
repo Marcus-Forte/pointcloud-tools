@@ -16,13 +16,24 @@ grpc::Status MetricServicesImpl::computeMetric(
 
   double result;
   switch (operation) {
-    case ::PointCloudTools::MetricOperation::AREA:
-      result = duna::metrics::computeArea(0);
+    case ::PointCloudTools::MetricOperation::AREA: {
+      if (converted_cloud->size() < 3) {
+        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                            "Insufficient points for area computation.");
+      } else
+        result = duna::metrics::computeArea(0);
       break;
+    }
 
-    case ::PointCloudTools::MetricOperation::VOLUME:
-      result = duna::metrics::computeVolume(0);
+    // TODO design ground level diff.
+    case ::PointCloudTools::MetricOperation::VOLUME: {
+      if (converted_cloud->size() < 3) {
+        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                            "Insufficient points for volume computation.");
+      } else
+        result = duna::metrics::computeVolume(0);
       break;
+    }
 
     default:
       std::cerr << "Invalid Operation\n";

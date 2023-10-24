@@ -24,7 +24,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
   }
 
   pcl::PointCloud<PointT>::Ptr output_cloud = pcl::make_shared<pcl::PointCloud<PointT>>();
-  
+
   // TODO filter factory?
   switch (request->operation()) {
     case PointCloudTools::FilterOperation::VOXEL_GRID: {
