@@ -14,6 +14,10 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid takes a single parameter.");
 
   auto voxel_resolution = param[0];
+
+  if (voxel_resolution < 0.0)
+     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid does not take negative resolution.");
+  
   try {
     converter = std::make_shared<duna::conversions::LASConverter>(request->input_file());
 
