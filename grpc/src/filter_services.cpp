@@ -39,6 +39,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
       std::cout << "Filtered from: " << pcl_cloud->size() << " to " << output_cloud->size()
                 << std::endl;
       try {
+        // TODO naming??
         const auto output_filename =
             converter->fromPCLToLasFile<PointT>(output_cloud, "_voxel_grid");
         response->set_message(output_filename);
