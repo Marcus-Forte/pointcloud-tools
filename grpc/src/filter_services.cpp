@@ -14,6 +14,10 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid takes a single parameter.");
 
   auto voxel_resolution = param[0];
+
+  if (voxel_resolution < 0.0)
+     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid does not take negative resolution.");
+  
   try {
     converter = std::make_shared<duna::conversions::LASConverter>(request->input_file());
 
@@ -24,7 +28,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
   }
 
   pcl::PointCloud<PointT>::Ptr output_cloud = pcl::make_shared<pcl::PointCloud<PointT>>();
-  
+
   // TODO filter factory?
   switch (request->operation()) {
     case PointCloudTools::FilterOperation::VOXEL_GRID: {
@@ -35,6 +39,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
       std::cout << "Filtered from: " << pcl_cloud->size() << " to " << output_cloud->size()
                 << std::endl;
       try {
+        // TODO naming??
         const auto output_filename =
             converter->fromPCLToLasFile<PointT>(output_cloud, "_voxel_grid");
         response->set_message(output_filename);

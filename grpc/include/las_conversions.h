@@ -11,7 +11,7 @@ class LASConverter {
  public:
   LASConverter(std::filesystem::path las_filepath) : las_filepath_(las_filepath) {
     if (!std::filesystem::is_regular_file(las_filepath))
-      throw std::runtime_error("Not a valid LAS file!");
+      throw std::runtime_error("Not a valid LAS file: " + las_filepath.string());
   }
 
   /// @brief creates a PCL pointcloud object form the .las file loaded.
