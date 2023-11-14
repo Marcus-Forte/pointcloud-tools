@@ -27,7 +27,7 @@ class LASConverter {
   /// @return output .las file.
   template <class PointT>
   std::string fromPCLToLasFile(const typename pcl::PointCloud<PointT>::ConstPtr& input_cloud,
-                               const std::string& suffix) const;
+                               const std::string& output_filename) const;
 
   /* Not implemented */
   template <class PointT>
