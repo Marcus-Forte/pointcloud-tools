@@ -57,6 +57,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
     }
 
     default:
+      return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "Unimplemented filter.");
       break;
   }
 
