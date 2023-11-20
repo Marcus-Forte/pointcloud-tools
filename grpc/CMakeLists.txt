@@ -59,6 +59,18 @@ las)
 add_executable(${COMPONENT_NAME}-server src/tools_grpc_server.cpp)
 target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib )
 
+if(BUILD_TESTS)
+    add_definitions(-DTEST_DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tst/tst_data")
+    find_package(GTest REQUIRED)
+    enable_testing()
+    include(GoogleTest)
+    add_executable(test_service 
+    tst/test_main.cpp
+    tst/test_service.cpp)
+    target_link_libraries(test_service ${COMPONENT_NAME}-lib GTest::gtest)
+    gtest_discover_tests(test_service)
+endif()
+
 # Component installation.
 install(
 TARGETS ${COMPONENT_NAME}-server

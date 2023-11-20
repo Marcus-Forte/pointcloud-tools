@@ -12,5 +12,6 @@ enum FilterOperation {
 message subsetFilterRequest {
     string input_file = 1;
     FilterOperation operation = 2;
-    repeated float parameters = 3; 
+    repeated float parameters = 3;
+    string output_name = 4;
 }

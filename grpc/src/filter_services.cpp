@@ -16,8 +16,14 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
   auto voxel_resolution = param[0];
 
   if (voxel_resolution < 0.0)
-     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid does not take negative resolution.");
-  
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "Voxel grid does not take negative resolution.");
+
+  auto output_name = request->output_name();
+
+  if (output_name.size() == 0)
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Invalid output name.");
+
   try {
     converter = std::make_shared<duna::conversions::LASConverter>(request->input_file());
 
@@ -39,9 +45,8 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
       std::cout << "Filtered from: " << pcl_cloud->size() << " to " << output_cloud->size()
                 << std::endl;
       try {
-        // TODO naming??
         const auto output_filename =
-            converter->fromPCLToLasFile<PointT>(output_cloud, "_voxel_grid");
+            converter->fromPCLToLasFile<PointT>(output_cloud, request->output_name());
         response->set_message(output_filename);
 
       } catch (const std::exception& err) {
@@ -52,6 +57,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
     }
 
     default:
+      return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "Unimplemented filter.");
       break;
   }
 

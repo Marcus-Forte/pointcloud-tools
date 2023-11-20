@@ -32,11 +32,11 @@ typename pcl::PointCloud<PointT>::Ptr LASConverter::toPCL() const {
 
 template <class PointT>
 std::string LASConverter::fromPCLToLasFile(const typename pcl::PointCloud<PointT>::ConstPtr& input,
-                                           const std::string& suffix) const {
+                                           const std::string& output_filename) const {
   std::ofstream ofs;
 
   auto filename = las_filepath_.stem();
-  auto output_file = (las_filepath_.parent_path() / filename).string() + suffix + ".las";
+  auto output_file = (las_filepath_.parent_path() / output_filename).string() + ".las";
   ofs.open(output_file, std::ios::out | std::ios::binary);
 
   std::cout << "file input: " << las_filepath_ << std::endl;
