@@ -3,7 +3,6 @@
 #include <duna_optimizer/cost_function_analytical_dyn.h>
 #include <duna_optimizer/cost_function_numerical.h>
 #include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt.h>
 #include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
 #include <gtest/gtest.h>
@@ -111,7 +110,7 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
   std::cout << "Map size: " << this->target_->size() << std::endl;
   std::cout << "#Scans: " << this->source_vector_.size() << std::endl;
 
-  duna_optimizer::LevenbergMarquadt<TypeParam, 3> optimizer;
+  duna_optimizer::LevenbergMarquadtDynamic<TypeParam> optimizer(3);
 
   optimizer.setMaximumIterations(15);
 

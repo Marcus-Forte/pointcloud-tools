@@ -13,10 +13,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 if(UNIX)
-# GTest required pthread in UNIX Os
-        link_libraries(pthread)
-        if(LINUX) # not APPLE
-        add_compile_options(-msse -msse2 -mavx -mfma -msse4)
+        if(NOT APPLE)
+        add_compile_options(-msse -msse2 -mavx2 -mfma -msse4.2 -mfpmath=sse)
         add_compile_options(-march=native)
         endif()
 elseif(MSVC)

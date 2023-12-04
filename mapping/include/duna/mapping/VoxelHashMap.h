@@ -96,7 +96,8 @@ class VoxelHashMap : public duna::IMap<PointT> {
   double voxel_size_;
   double max_distance_;
   int max_points_per_voxel_;
-  tsl::robin_map<Voxel, VoxelBlock, VoxelHash> map_;
+  std::unordered_map<Voxel, VoxelBlock, VoxelHash> map_;
+  // tsl::robin_map<Voxel, VoxelBlock, VoxelHash> map_;
 
   // Internal structures //
   struct ResultTuple {

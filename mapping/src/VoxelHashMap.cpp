@@ -267,7 +267,7 @@ void VoxelHashMap<PointT>::AddPoints(const PointCloudT &points, PointCloudTPtr n
     bool new_point_inserted = false;
 
     if (search != map_.end()) {
-      auto &voxel_block = search.value();
+      auto &voxel_block = search->second; // or .value() if using tsl.
       new_point_inserted = voxel_block.AddPoint(point);
 
     } else {

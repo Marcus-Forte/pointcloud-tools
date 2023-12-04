@@ -36,7 +36,8 @@ if(BUILD_TESTS)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
 
     add_executable(mapping_tests 
-    tst/test_voxel_mapping.cpp)
+    tst/test_voxel_mapping.cpp
+    tst/test_kdtree_mapping.cpp)
     target_link_libraries(mapping_tests PRIVATE ${COMPONENT_NAME} GTest::gtest_main)
     gtest_discover_tests(mapping_tests)
 endif()

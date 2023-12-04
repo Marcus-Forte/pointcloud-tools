@@ -1,7 +1,6 @@
 #include <duna_optimizer/cost_function_analytical_dyn.h>
 #include <duna_optimizer/cost_function_numerical.h>
 #include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt.h>
 #include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
 #include <getopt.h>

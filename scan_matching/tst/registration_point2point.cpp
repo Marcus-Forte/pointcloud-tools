@@ -1,7 +1,6 @@
 #include <duna_optimizer/cost_function_analytical_dyn.h>
 #include <duna_optimizer/cost_function_numerical.h>
 #include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt.h>
 #include <duna_optimizer/levenberg_marquadt_dyn.h>
 #include <duna_optimizer/loss_function/geman_mcclure.h>
 #include <getopt.h>
@@ -38,7 +37,7 @@ class RegistrationPoint2Point : public ::testing::Test {
     source.reset(new PointCloutT);
     target.reset(new PointCloutT);
     reference_transform.setIdentity();
-    optimizer = std::make_shared<duna_optimizer::LevenbergMarquadt<Scalar, 6>>();
+    optimizer = std::make_shared<duna_optimizer::LevenbergMarquadtDynamic<Scalar>>(6);
 
     if (pcl::io::loadPCDFile(TEST_DATA_DIR "/map1.pcd", *target) != 0) {
       throw std::runtime_error("Unable to load test data 'bunny.pcd'");
@@ -153,7 +152,7 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
   auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model,
                                                                          this->source->size());
-
+  
   this->optimizer->addCost(cost);
 
   TypeParam x0[6] = {0};

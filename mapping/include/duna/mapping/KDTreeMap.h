@@ -25,7 +25,7 @@ class KDTreeMap : public IMap<PointT> {
 
   virtual ~KDTreeMap() = default;
 
-  void AddPoints(const pcl::PointCloud<PointT>& points) override {
+  void AddPoints(const pcl::PointCloud<PointT>& points, PointCloudTPtr added_points) override {
     *pointcloud_ += points;
     kdtree_->setInputCloud(pointcloud_);
   }

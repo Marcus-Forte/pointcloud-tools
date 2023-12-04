@@ -1,6 +1,5 @@
 #pragma once
 #include <duna/mapping/IMap.h>
-#include <duna_optimizer/levenberg_marquadt.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 template <class Scalar, class PointT>
