@@ -14,7 +14,6 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 if(UNIX)
         if(NOT APPLE)
-        add_compile_options(-msse -msse2 -mavx2 -mfma -msse4.2 -mfpmath=sse)
         add_compile_options(-march=native)
         endif()
 elseif(MSVC)
