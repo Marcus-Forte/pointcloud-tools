@@ -7,19 +7,19 @@ RUN apt-get update && apt-get install git build-essential libeigen3-dev libflann
 
 WORKDIR /deps
 
-RUN git clone --recurse-submodules -b v1.50.0 --depth 1 --shallow-submodules https://github.com/grpc/grpc && \
+RUN git clone --recurse-submodules -b v1.56.0 --depth 1 --shallow-submodules https://github.com/grpc/grpc && \
     git clone -b pcl-1.13.1 --depth 1 https://github.com/PointCloudLibrary/pcl.git && \
     git clone -b v1.2.1 --depth 1 https://github.com/Tessil/robin-map.git && \
     git clone -b v2021.10.0 --depth 1 https://github.com/oneapi-src/oneTBB.git && \
     git clone -b main https://github.com/Duna-System/duna-optimizer.git
 
 RUN mkdir -p /deps/grpc/build && cd /deps/grpc/build && \
-    cmake .. -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF && \
+    cmake .. -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release && \
     make install -j$(nproc)
 
 RUN mkdir -p /deps/pcl/build && cd /deps/pcl/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF -DWITH_OPENGL=OFF && \
-    make -j$(nproc) install
+    make -j2 install
 
 RUN mkdir -p /deps/oneTBB/build && cd /deps/oneTBB/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release -DTBB_TEST=OFF && \
@@ -38,7 +38,7 @@ COPY . /app
 WORKDIR /app
 # Build application.
 RUN mkdir build && cd build && \
-    cmake .. -DBUILD_GRPC=ON && \
+    cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc)
 
 # Run server.
