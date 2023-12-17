@@ -84,7 +84,7 @@ TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
   map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(this->voxel_size, 100, 10);
   map->AddPoints(*this->target);
 
-  std::cout << "Voxel hash Map downsample: " << map->Pointcloud()->size() << "/"
+  std::cout << "Voxel hash Map downsample: " << map->MakePointcloud()->size() << "/"
             << this->target->size() << std::endl;
 
   typename duna::ScanMatching3DOFPoint2Point<PointT, PointT, TypeParam>::Ptr scan_matcher_model;

@@ -227,7 +227,7 @@ VoxelHashMap<PointT>::GetCorrespondencesSourceIndices(const PointCloudT &points,
 }
 
 template <class PointT>
-typename VoxelHashMap<PointT>::PointCloudTPtr VoxelHashMap<PointT>::Pointcloud() const {
+typename VoxelHashMap<PointT>::PointCloudTPtr VoxelHashMap<PointT>::MakePointcloud() const {
   PointCloudTPtr cloud = pcl::make_shared<PointCloudT>();
 
   cloud->points.reserve(max_points_per_voxel_ * map_.size());
@@ -267,7 +267,7 @@ void VoxelHashMap<PointT>::AddPoints(const PointCloudT &points, PointCloudTPtr n
     bool new_point_inserted = false;
 
     if (search != map_.end()) {
-      auto &voxel_block = search->second; // or .value() if using tsl.
+      auto &voxel_block = search->second;  // or .value() if using tsl.
       new_point_inserted = voxel_block.AddPoint(point);
 
     } else {

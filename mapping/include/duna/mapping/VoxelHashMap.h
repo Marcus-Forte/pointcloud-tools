@@ -90,7 +90,10 @@ class VoxelHashMap : public duna::IMap<PointT> {
   // void Update(const std::vector<Eigen::Vector3d> &points, const Sophus::SE3d &pose);
   void AddPoints(const PointCloudT &points, PointCloudTPtr added_points = 0) override;
   void RemovePointsFarFromLocation(const PointT &origin);
-  PointCloudTPtr Pointcloud() const override;
+
+  /// @brief Returns a PCL Pointcloud representation of the map.
+  /// @return A copy of a PCL Pointcloud representation of the map.
+  PointCloudTPtr MakePointcloud() const override;
 
  private:
   double voxel_size_;

@@ -1,3 +1,4 @@
+#include <duna_optimizer/cost_function_analytical.h>
 #include <duna_optimizer/cost_function_analytical_dyn.h>
 #include <duna_optimizer/cost_function_numerical.h>
 #include <duna_optimizer/cost_function_numerical_dyn.h>
@@ -84,7 +85,7 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(this->voxel_size, 100, 10);
   map->AddPoints(*this->target);
 
-  std::cout << "Voxel hash Map downsample: " << map->Pointcloud()->size() << "/"
+  std::cout << "Voxel hash Map downsample: " << map->MakePointcloud()->size() << "/"
             << this->target->size() << std::endl;
 
   typename duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>::Ptr scan_matcher_model;
@@ -143,7 +144,7 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
   map = std::make_shared<kiss_icp::VoxelHashMap<PointT>>(this->voxel_size, 100, 2);
   map->AddPoints(*this->target);
 
-  std::cout << "Voxel hash Map downsample: " << map->Pointcloud()->size() << "/"
+  std::cout << "Voxel hash Map downsample: " << map->MakePointcloud()->size() << "/"
             << this->target->size() << std::endl;
 
   typename duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>::Ptr scan_matcher_model;
@@ -152,7 +153,7 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
   auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model,
                                                                          this->source->size());
-  
+
   this->optimizer->addCost(cost);
 
   TypeParam x0[6] = {0};

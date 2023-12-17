@@ -35,7 +35,7 @@ TEST_F(TestVoxelMapping, TestInsertOnePointLimit) {
   // Call twice
   voxel_hashmap_->AddPoints(insert_cloud);
 
-  auto representation = voxel_hashmap_->Pointcloud();
+  auto representation = voxel_hashmap_->MakePointcloud();
 
   EXPECT_EQ(representation->points.size(), 4);
   EXPECT_TRUE(representation->points[0] == pcl::PointXYZI(0.0, 0.0, 0.0));

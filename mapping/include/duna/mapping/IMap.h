@@ -25,9 +25,9 @@ class IMap {
   /// @param points pointcloud with points to be added.
   virtual void AddPoints(const pcl::PointCloud<PointT>& points,
                          PointCloudTPtr added_points = 0) = 0;
-  /// @brief Get a point cloud representation of the map.
+  /// @brief Get a copy of a point cloud representation of the map.
   /// @return
-  virtual PointCloudTPtr Pointcloud() const = 0;
+  virtual PointCloudTPtr MakePointcloud() const = 0;
   /// @brief Compute the nearest neighboors correspondences from a given pointcloud.
   /// @param points PointCloud
   /// @param max_correspondance_distance Maximum distance between correspondences.

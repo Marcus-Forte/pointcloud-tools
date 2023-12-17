@@ -29,7 +29,7 @@ Eigen::Matrix<Scalar, 4, 4> visualize_steps(
     viewer->addPointCloud<PointT>(target, "target");
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0,
                                              "target");
-    viewer->addPointCloud<PointT>(map->Pointcloud(), "map_points");
+    viewer->addPointCloud<PointT>(map->MakePointcloud(), "map_points");
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0,
                                              "map_points");
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0,

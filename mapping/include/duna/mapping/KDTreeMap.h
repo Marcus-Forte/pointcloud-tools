@@ -30,7 +30,7 @@ class KDTreeMap : public IMap<PointT> {
     kdtree_->setInputCloud(pointcloud_);
   }
 
-  PointCloudTPtr Pointcloud() const override { return PointCloudTPtr(pointcloud_); }
+  PointCloudTPtr MakePointcloud() const override { return PointCloudTPtr(pointcloud_); }
 
   virtual std::tuple<PointCloudTPtr, PointCloudTPtr> GetCorrespondences(
       const PointCloudT& points, double max_correspondance_distance) const override {

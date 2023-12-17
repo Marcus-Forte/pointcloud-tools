@@ -207,5 +207,5 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
   std::cout << "Saving final pointcloud to " << final_cloud_filename << std::endl;
   pcl::io::savePCDFileBinary(final_cloud_filename, *HD_cloud);
   pcl::io::savePCDFileBinary("ss_" + final_cloud_filename, *this->target_);
-  pcl::io::savePCDFileBinary("map_representation.pcd", *map->Pointcloud());
+  pcl::io::savePCDFileBinary("map_representation.pcd", *map->MakePointcloud());
 }
