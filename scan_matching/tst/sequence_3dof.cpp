@@ -150,8 +150,8 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
     voxel.setInputCloud(this->source_vector_[i]);
     voxel.setLeafSize(this->subsample, this->subsample, this->subsample);
     voxel.filter(*subsampled_input);
-    timer.tock("Voxel grid onver input");
-
+    auto delta = timer.tock();
+    std::cout << "Voxel grid onver input: " << delta << std::endl;
     std::cout << "Subsampled # points: " << subsampled_input->size() << std::endl;
 
     timer.tick();
@@ -170,7 +170,8 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
     optimizer.addCost(cost);
     optimizer.minimize(x0);
     optimizer.clearCosts();
-    total_reg_time += timer.tock("Registration");
+    total_reg_time += timer.tock();
+    std::cerr << "[time] Registration: " << total_reg_time << std::endl;
     delete cost;
 
     so3::convert3DOFParameterToMatrix(x0, transform);
@@ -180,7 +181,8 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
 
     map->AddPoints(*output);
 
-    timer.tock("Add registered points to map");
+    delta = timer.tock();
+    std::cerr << "[time] Add registered points to map: " << delta << std::endl;
 
     pcl::transformPointCloud(*this->source_vector_[i], *output, transform);
 
