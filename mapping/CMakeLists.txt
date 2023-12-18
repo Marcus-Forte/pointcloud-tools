@@ -35,9 +35,9 @@ if(BUILD_TESTS)
     include(GoogleTest)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
 
-    add_executable(mapping_tests 
+    add_executable(tst_mapping 
     tst/test_voxel_mapping.cpp
     tst/test_kdtree_mapping.cpp)
-    target_link_libraries(mapping_tests PRIVATE ${COMPONENT_NAME} GTest::gtest_main)
-    gtest_discover_tests(mapping_tests)
+    target_link_libraries(tst_mapping PRIVATE ${COMPONENT_NAME} GTest::gtest_main)
+    gtest_discover_tests(tst_mapping)
 endif()
