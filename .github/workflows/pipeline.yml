@@ -8,7 +8,8 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: duna-pool
+    runs-on:
+    group: duna-pool
 
     steps:
       - uses: actions/checkout@v3
