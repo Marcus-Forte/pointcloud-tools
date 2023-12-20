@@ -19,5 +19,8 @@ jobs:
       - name: Build
         run: ./docker_build.sh
 
-      - name: Test
-        run: docker run duna-pointcloud-tools /app/build/scan_matching/tst_scan_matching
+      - name: Test Scan Matching
+        run: docker run duna-pointcloud-tools ctest --test-dir /app/build/scan_matching
+      
+      - name: Test Scan GRPC filter service
+        run: docker run duna-pointcloud-tools ctest --test-dir /app/build/grpc
