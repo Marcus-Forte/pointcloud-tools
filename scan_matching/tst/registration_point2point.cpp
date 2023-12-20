@@ -17,7 +17,12 @@
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"
 #include "duna/scan_matching/scan_matching.h"
+
+#ifdef CI_BUILD
+#warning "DISABLING VIZUALIZATION"
+#else
 #include "test_visualization.h"
+#endif
 
 extern bool g_visualize;
 extern bool ab;
@@ -106,9 +111,11 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
     this->optimizer->minimize(x0);
     so3::convert6DOFParameterToMatrix(x0, this->result_transform);
   } else {
+    #ifndef CI_BUILD
     // Visualize (optional)
     this->result_transform = visualize_steps<TypeParam, PointT>(
         this->source, this->target, this->optimizer, map, this->corr_dist);
+    #endif
   }
 
   // Assert
@@ -162,8 +169,10 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
     so3::convert6DOFParameterToMatrix(x0, this->result_transform);
   } else {
     // Visualize (optional)
+    #ifndef CI_BUILD
     this->result_transform = visualize_steps<TypeParam, PointT>(
         this->source, this->target, this->optimizer, map, this->corr_dist);
+    #endif
   }
 
   // Assert
@@ -214,8 +223,10 @@ TYPED_TEST(RegistrationPoint2Point, DISABLED_RotationPlusTranslationDynamic) {
     so3::convert6DOFParameterToMatrix(x0, this->result_transform);
   } else {
     // Visualize (optional)
+    #ifndef CI_BUILD
     this->result_transform = visualize_steps<TypeParam, PointT>(
         this->source, this->target, this->optimizer, map, this->corr_dist);
+    #endif
   }
 
   // Assert

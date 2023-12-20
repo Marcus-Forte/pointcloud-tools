@@ -16,7 +16,12 @@
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"
 #include "duna/scan_matching/scan_matching_2d.h"
+
+#ifdef CI_BUILD
+#warning "DISABLING VIZUALIZATION"
+#else
 #include "test_visualization.h"
+#endif
 
 extern bool g_visualize;
 

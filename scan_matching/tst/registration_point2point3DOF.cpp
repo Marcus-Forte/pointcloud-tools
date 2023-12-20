@@ -16,7 +16,12 @@
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"
 #include "duna/scan_matching/scan_matching_3dof.h"
+
+#ifdef CI_BUILD
+#warning "DISABLING VIZUALIZATION"
+#else
 #include "test_visualization.h"
+#endif
 
 extern bool g_visualize;
 
@@ -106,8 +111,10 @@ TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
     so3::convert3DOFParameterToMatrix(x0, this->result_transform);
   } else {
     // Visualize (optional)
+    #ifndef CI_BUILD
     this->result_transform = visualize_steps<TypeParam, PointT>(
         this->source, this->target, this->optimizer, map, this->corr_dist, true);
+    #endif
   }
 
   // Assert

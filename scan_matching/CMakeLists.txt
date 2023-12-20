@@ -33,6 +33,11 @@ if(BUILD_TESTS)
     message(STATUS "Building tests for component '${COMPONENT_NAME}' ")
     get_filename_component(DATASET_PATH tst/data/ REALPATH)
     add_definitions(-DTEST_DATA_DIR="${DATASET_PATH}")
+    # IMPROVE!!
+    if(DEFINED ENV{CI_BUILD})
+        message(WARNING "CI BUILD. Disabling visualization.")
+        add_definitions(-DCI_BUILD)
+    endif()
     set(tst_srcs
     # tst/registration_point2plane.cpp
     tst/registration_point2point2d.cpp

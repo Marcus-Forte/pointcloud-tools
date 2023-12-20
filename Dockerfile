@@ -3,7 +3,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
 # Get dependencies.
-RUN apt-get update && apt-get install git build-essential libeigen3-dev libflann-dev libboost-all-dev cmake -y
+RUN apt-get update && apt-get install git build-essential libeigen3-dev libflann-dev libboost-all-dev libgtest-dev cmake -y
 
 WORKDIR /deps
 
@@ -19,7 +19,7 @@ RUN mkdir -p /deps/grpc/build && cd /deps/grpc/build && \
 
 RUN mkdir -p /deps/pcl/build && cd /deps/pcl/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF -DWITH_OPENGL=OFF && \
-    make -j2 install
+    make -j3 install
 
 RUN mkdir -p /deps/oneTBB/build && cd /deps/oneTBB/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release -DTBB_TEST=OFF && \
@@ -38,7 +38,7 @@ COPY . /app
 WORKDIR /app
 # Build application.
 RUN mkdir build && cd build && \
-    cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release && \
+    CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON && \
     make -j$(nproc)
 
 # Run server.
