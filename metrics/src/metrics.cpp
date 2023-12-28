@@ -3,6 +3,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/io/ply_io.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
@@ -48,28 +49,41 @@ float computeArea(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr input) {
 
   ne.setInputCloud(input);
   ne.setSearchMethod(tree);
-  ne.setKSearch(5);
-
-  auto input_area = pcl::calculatePolygonArea(*input);
+  ne.setKSearch(20);
 
   ne.compute(*point_with_normals);
 
   // Copy point coordinates
   pcl::concatenateFields(*input, *point_with_normals, *point_with_normals);
 
+  // pcl::io::savePLYFileBinary("points_normals.ply", *point_with_normals);
+
   // Call reconstruction algorithm
   pcl::PolygonMesh mesh;
   pcl::GreedyProjectionTriangulation<pcl::PointNormal> surface;
-  // gp.setMaximumAngle(2.0);
-  // gp.setMinimumAngle(0.05);
-  surface.setSearchRadius(100.0);
-  // gp.setNormalConsistency(true);
-  surface.setMu(2.0);
+  // surface.setMaximumSurfaceAngle(M_PI);
 
+  surface.setSearchRadius(20.0);
+  surface.setMu(2.0);
+  // surface.setMaximumAngle(2.0);
+  surface.setMinimumAngle(M_PI_4 / 2.0f);  // pi/8
+  surface.setMaximumAngle(M_PI_2);         // pi/2
+
+  // surface.setMaximumNearestNeighbors(50);
+  // surface.setConsistentVertexOrdering(true);
+  // surface.setNormalConsistency(true);
+  // surface.setNormalConsistency(true);
+
+  // pcl::GridProjection<pcl::PointNormal> surface;
+  // surface.setMaxBinarySearchLevel(2);
+  // surface.setResolution(0.2);
+  // surface.setNearestNeighborNum(3);
   surface.setInputCloud(point_with_normals);
   surface.reconstruct(mesh);
-  //
-  std::cout << "N# of meshes " << mesh.polygons.size() << std::endl;
+
+  // pcl::io::savePLYFileBinary("mesh.ply", mesh);
+  
+  // std::cout << "N# of meshes " << mesh.polygons.size() << std::endl;
 
   if (mesh.polygons.size() < 1) throw new exceptions::unable_to_process_mesh;
 

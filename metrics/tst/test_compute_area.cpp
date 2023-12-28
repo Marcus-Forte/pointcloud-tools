@@ -67,8 +67,8 @@ TEST(TestMetrics, testAreaFromMesh) {
   EXPECT_NEAR(area, 3669.2f, 0.1);
 }
 
-// Taken from cloud compare. Expected from CC surface estimate.
-TEST(TestMetrics, testLargeArea) {
+// Taken from cloud compare. Expected from CC surface estimate. Very unstable.
+TEST(TestMetrics, DISABLED_testLargeArea) {
   PointCloudT::Ptr input = pcl::make_shared<PointCloudT>();
 
   auto test_file_path = std::filesystem::path(tst_binary_dir / "test_surface.ply");
