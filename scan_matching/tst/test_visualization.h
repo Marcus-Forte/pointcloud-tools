@@ -1,6 +1,7 @@
 #pragma once
 #include <duna/mapping/IMap.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
 #include <thread>
 template <class Scalar, class PointT>
 Eigen::Matrix<Scalar, 4, 4> visualize_steps(
@@ -58,7 +59,7 @@ Eigen::Matrix<Scalar, 4, 4> visualize_steps(
     viewer->addCorrespondences<PointT>(source_transformed, tgt_ptr, corrs);
     while (continue_flag == false) {
       viewer->spinOnce(100);
-      if(viewer->wasStopped()) {
+      if (viewer->wasStopped()) {
         std::cout << "Window closed. Test will exit.\n";
         viewer->close();
         exit(0);

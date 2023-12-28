@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(duna-pointcloud-tools)
 set(CMAKE_CXX_STANDARD 17)
-find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search visualization)
+find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search surface features visualization)
 find_package(duna-optimizer REQUIRED)
 find_package(tsl-robin-map REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time)

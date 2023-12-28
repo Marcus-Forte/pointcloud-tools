@@ -110,11 +110,11 @@ TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
     this->optimizer->minimize(x0);
     so3::convert3DOFParameterToMatrix(x0, this->result_transform);
   } else {
-    // Visualize (optional)
-    #ifndef CI_BUILD
+// Visualize (optional)
+#ifndef CI_BUILD
     this->result_transform = visualize_steps<TypeParam, PointT>(
         this->source, this->target, this->optimizer, map, this->corr_dist, true);
-    #endif
+#endif
   }
 
   // Assert
