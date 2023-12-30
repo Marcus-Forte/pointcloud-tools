@@ -28,6 +28,12 @@ class unable_to_process_mesh : public exception {
   unable_to_process_mesh() { msg_ += "::unable_to_process_mesh\n"; }
   virtual ~unable_to_process_mesh() = default;
 };
+
+class invalid_input : public exception {
+ public:
+  invalid_input() { msg_ += "::invalid input.check pointers\n"; }
+  virtual ~invalid_input() = default;
+};
 }  // namespace exceptions
 }  // namespace metrics
 }  // namespace duna

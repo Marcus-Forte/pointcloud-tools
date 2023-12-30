@@ -11,9 +11,7 @@ grpc::Status MetricServicesImpl::computeMetric(
   auto points = request->points();
 
   PointCloudT::Ptr converted_cloud = pcl::make_shared<PointCloudT>();
-
   duna::conversions::toPCL(points, *converted_cloud);
-
   double result;
   switch (operation) {
     case ::PointCloudTools::MetricOperation::AREA: {
@@ -21,7 +19,7 @@ grpc::Status MetricServicesImpl::computeMetric(
         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                             "Insufficient points for area computation.");
       } else
-        result = duna::metrics::computeArea(0);
+        result = duna::metrics::computeArea(converted_cloud);
       break;
     }
 

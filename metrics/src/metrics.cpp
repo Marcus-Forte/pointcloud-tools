@@ -37,6 +37,7 @@ float computeAreaFromPolygonMesh(const pcl::PolygonMesh& mesh) {
 }
 
 float computeArea(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr input) {
+  if (!input) throw exceptions::invalid_input();
   if (input->size() < 3) throw exceptions::not_enough_input_points();
 
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree =
@@ -82,7 +83,7 @@ float computeArea(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr input) {
   surface.reconstruct(mesh);
 
   // pcl::io::savePLYFileBinary("mesh.ply", mesh);
-  
+
   // std::cout << "N# of meshes " << mesh.polygons.size() << std::endl;
 
   if (mesh.polygons.size() < 1) throw new exceptions::unable_to_process_mesh;
