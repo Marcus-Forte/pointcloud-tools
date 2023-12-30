@@ -17,12 +17,12 @@ int main() {
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 
-  MetricServicesImpl service;
+  MetricServicesImpl metric_service;
   FilterServicesImpl filter_service;
 
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-  builder.RegisterService(&service);
+  builder.RegisterService(&metric_service);
   builder.RegisterService(&filter_service);
 
   std::unique_ptr<Server> server(builder.BuildAndStart());

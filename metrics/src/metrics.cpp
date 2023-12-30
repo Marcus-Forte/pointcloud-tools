@@ -63,8 +63,8 @@ float computeArea(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr input) {
   pcl::PolygonMesh mesh;
   pcl::GreedyProjectionTriangulation<pcl::PointNormal> surface;
   // surface.setMaximumSurfaceAngle(M_PI);
-
-  surface.setSearchRadius(20.0);
+  // Lets make it a big radius..
+  surface.setSearchRadius(2000.0);
   surface.setMu(2.0);
   // surface.setMaximumAngle(2.0);
   surface.setMinimumAngle(M_PI_4 / 2.0f);  // pi/8
