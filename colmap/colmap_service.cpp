@@ -1,0 +1,1 @@
+#include "colmap/scene/reconstruction.h"

@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:latest as tools-base
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
@@ -36,6 +36,7 @@ RUN mkdir -p /deps/duna-optimizer/build && cd /deps/duna-optimizer/build && \
 RUN rm -rf /deps
 COPY . /app
 WORKDIR /app
+
 # Build application.
 RUN mkdir build && cd build && \
     CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON && \
@@ -44,3 +45,31 @@ RUN mkdir build && cd build && \
 # Run server.
 CMD "/app/build/grpc/grpc-interface-server"
 EXPOSE 10001
+
+FROM tools-base AS tools-colmap
+
+WORKDIR /deps
+
+RUN apt-get update && apt-get install -y \
+    libsqlite3-dev \
+    libflann-dev \
+    libfreeimage-dev \
+    libmetis-dev \
+    libgoogle-glog-dev \
+    libgtest-dev \
+    libcgal-dev \
+    libglew-dev \
+    qtbase5-dev \
+    libceres-dev
+
+RUN git clone https://github.com/colmap/colmap.git -b 3.9.1
+
+RUN mkdir -p /deps/colmap/build && cd /deps/colmap/build && \
+    cmake .. -DOPENGL_ENABLED=OFF && \
+    make -j$(nproc) install
+
+# (re) run cmake with colmap
+WORKDIR /app
+RUN cd build && \
+    CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DWITH_COLMAP=ON && \
+    make -j$(nproc)

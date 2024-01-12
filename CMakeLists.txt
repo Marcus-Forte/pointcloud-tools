@@ -31,27 +31,33 @@ option(BUILD_GRPC "Build GRPC API functions" OFF)
 option(BUILD_MAPPING "Build mapping " ON)
 option(BUILD_SCANMATCHING "Build scan matching " ON)
 option(BUILD_TESTS "Build tests" OFF)
+option(WITH_COLMAP "With colmap" OFF)
 
 include(GNUInstallDirs)
 if (BUILD_FILTERS)
-add_subdirectory(filters)
+    add_subdirectory(filters)
 endif()
 if(BUILD_GRPC)
-add_subdirectory(grpc)
-# libLAS confi
-option(WITH_GEOTIFF "" OFF)
-option(WITH_GDAL "" OFF)
-option(WITH_TESTS "" OFF)
-add_subdirectory(third_party/libLAS)
+    add_subdirectory(grpc)
+    # libLAS config
+    option(WITH_GEOTIFF "" OFF)
+    option(WITH_GDAL "" OFF)
+    option(WITH_TESTS "" OFF)
+    add_subdirectory(third_party/libLAS)
 endif()
 if(BUILD_MAPPING)
-add_subdirectory(mapping)
+    add_subdirectory(mapping)
 endif()
 if(BUILD_SCANMATCHING)
-add_subdirectory(scan_matching)
+    add_subdirectory(scan_matching)
 endif()
 
 add_subdirectory(metrics)
+
+if(WITH_COLMAP)
+    find_package(colmap 3.9.1 REQUIRED)
+    add_subdirectory(colmap)
+endif()
 
 # Filters
 configure_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in ${PROJECT_NAME}-config.cmake
