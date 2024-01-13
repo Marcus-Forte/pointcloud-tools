@@ -54,11 +54,6 @@ endif()
 
 add_subdirectory(metrics)
 
-if(WITH_COLMAP)
-    find_package(colmap 3.9.1 REQUIRED)
-    add_subdirectory(colmap)
-endif()
-
 # Filters
 configure_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in ${PROJECT_NAME}-config.cmake
                @ONLY)

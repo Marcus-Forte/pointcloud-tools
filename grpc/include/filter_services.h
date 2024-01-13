@@ -7,7 +7,7 @@
 #include "pcl/filters/voxel_grid.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
-#include "tools_interface.grpc.pb.h"
+#include "tools.grpc.pb.h"
 
 class FilterServicesImpl : public PointCloudTools::FilterServices::Service {
  public:

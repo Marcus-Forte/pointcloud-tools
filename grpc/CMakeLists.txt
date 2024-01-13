@@ -22,7 +22,9 @@ include(gen_proto.cmake)
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/common.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/metrics.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/filters.proto")
-generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/tools_interface.proto")
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/reconstruct.proto")
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/tools.proto")
+
 
 include_directories(include)
 
@@ -36,8 +38,11 @@ ${CMAKE_CURRENT_BINARY_DIR}/metrics.grpc.pb.cc
 ${CMAKE_CURRENT_BINARY_DIR}/filters.pb.cc
 ${CMAKE_CURRENT_BINARY_DIR}/filters.grpc.pb.cc
 
-${CMAKE_CURRENT_BINARY_DIR}/tools_interface.pb.cc
-${CMAKE_CURRENT_BINARY_DIR}/tools_interface.grpc.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/reconstruct.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/reconstruct.grpc.pb.cc
+
+${CMAKE_CURRENT_BINARY_DIR}/tools.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/tools.grpc.pb.cc
 )
 
 target_link_libraries(${COMPONENT_NAME}-proto-lib
@@ -46,15 +51,30 @@ ${_GRPC_GRPCPP}
 ${_PROTOBUF_LIBPROTOBUF}
 )
 
-add_library(${COMPONENT_NAME}-lib 
+set(grpc_lib_src
 src/metric_services.cpp
 src/filter_services.cpp
-src/las_conversions.cpp)
+src/las_conversions.cpp
+)
+
+set(colmap_lib)
+if(WITH_COLMAP)
+    find_package(colmap 3.9.1 REQUIRED)
+    set(grpc_lib_src ${grpc_lib_src} src/reconstruct_services.cpp)
+    set(colmap_lib colmap::colmap)
+    add_compile_definitions(WITH_COLMAP)
+endif()
+message(STATUS "gRPC component sources: ${grpc-lib-src}")
+
+add_library(${COMPONENT_NAME}-lib 
+${grpc_lib_src}
+)
 
 target_link_libraries(${COMPONENT_NAME}-lib 
 ${COMPONENT_NAME}-proto-lib
 metrics 
-las)
+las
+${colmap_lib})
 
 add_executable(${COMPONENT_NAME}-server src/tools_grpc_server.cpp)
 target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib )

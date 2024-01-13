@@ -5,6 +5,7 @@
 
 #include "filter_services.h"
 #include "metric_services.h"
+#include "reconstruct_services.h"
 
 using grpc::Channel;
 using grpc::Server;
@@ -24,6 +25,11 @@ int main() {
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&metric_service);
   builder.RegisterService(&filter_service);
+
+#ifdef WITH_COLMAP
+  ReconstructServiceImpl reconstruct_service;
+  builder.RegisterService(&reconstruct_service);
+#endif
 
   std::unique_ptr<Server> server(builder.BuildAndStart());
 

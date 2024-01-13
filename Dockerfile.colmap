@@ -1,0 +1,30 @@
+# Make sure other image is built.
+
+FROM duna-pointcloud-tools
+
+WORKDIR /deps
+
+RUN apt-get update && apt-get install -y \
+    libsqlite3-dev \
+    libflann-dev \
+    libfreeimage-dev \
+    libmetis-dev \
+    libgoogle-glog-dev \
+    libgtest-dev \
+    libcgal-dev \
+    libglew-dev \
+    qtbase5-dev \
+    libceres-dev
+
+RUN git clone https://github.com/colmap/colmap.git -b 3.9.1
+
+RUN mkdir -p /deps/colmap/build && cd /deps/colmap/build && \
+    cmake .. -DOPENGL_ENABLED=OFF && \
+    make -j$(nproc) install
+
+# (re) run cmake with colmap
+COPY . /app
+WORKDIR /app
+RUN cd build && \
+    CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DWITH_COLMAP=ON && \
+    make -j$(nproc)

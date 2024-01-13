@@ -5,7 +5,7 @@
 
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
-#include "tools_interface.grpc.pb.h"
+#include "tools.grpc.pb.h"
 
 class MetricServicesImpl : public PointCloudTools::MetricServices::Service {
  public:
