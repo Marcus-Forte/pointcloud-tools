@@ -9,9 +9,9 @@
 
 std::mutex mutex;
 
-void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_path,
-                    const std::string& workspace_path,
-                    colmap::AutomaticReconstructionController::Quality quality) {
+::grpc::Status colmap_routine(ReconstructServiceImpl* caller, ::grpc::ServerContext* context,
+                              const std::string& images_path, const std::string& workspace_path,
+                              colmap::AutomaticReconstructionController::Quality quality) {
   colmap::AutomaticReconstructionController::Options options;
   options.image_path = images_path;
   options.workspace_path = workspace_path;
@@ -41,13 +41,30 @@ void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_pa
   std::cout << images_path << " --> START!\n";
 
   while (!automatic.IsFinished()) {
+    if (context->IsCancelled()) {
+      std::cout << images_path << ": Cancelled!\n";
+      {
+        std::lock_guard<std::mutex> lock_guard(mutex);
+        status_map->at(images_path) = PointCloudTools::JobStatus::CANCELLED;
+        automatic.Stop();
+        automatic.Wait();
+      }
+      return grpc::Status::CANCELLED;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::yield();
   }
+  // Join threads
+  automatic.Wait();
 
   std::cout << images_path << " --> DONE!\n";
   {
     std::lock_guard<std::mutex> lock_guard(mutex);
     status_map->at(images_path) = PointCloudTools::JobStatus::DONE;
   }
+
+  return grpc::Status::OK;
 }
 
 ::grpc::Status ReconstructServiceImpl::reconstructFromImages(
@@ -56,6 +73,7 @@ void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_pa
   auto images_path = request->images_path();
   auto options = request->options();
   auto quality = options.quality();
+  grpc::Status ret;
   try {
     if (!std::filesystem::is_directory(images_path))
       throw std::runtime_error("Not a directory: " + images_path);
@@ -87,12 +105,12 @@ void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_pa
     // Blocking call...
 
     if (status_map->find(images_path) == status_map->end()) {
-      colmap_routine(this, images_path, workspace_path,
-                     (colmap::AutomaticReconstructionController::Quality)quality);
+      ret = colmap_routine(this, context, images_path, workspace_path,
+                           (colmap::AutomaticReconstructionController::Quality)quality);
     } else {
-      if (status_map->at(images_path) == PointCloudTools::DONE) {
-        colmap_routine(this, images_path, workspace_path,
-                     (colmap::AutomaticReconstructionController::Quality)quality);
+      if (status_map->at(images_path) == PointCloudTools::DONE || status_map->at(images_path) == PointCloudTools::CANCELLED) {
+        ret = colmap_routine(this, context, images_path, workspace_path,
+                             (colmap::AutomaticReconstructionController::Quality)quality);
       } else {
         return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
                             "Job for that location is still running.");
@@ -105,13 +123,12 @@ void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_pa
   }
 
   // colmap_caller()
-  return grpc::Status::OK;
+  return ret;
 }
 
 ::grpc::Status ReconstructServiceImpl::getJobStatus(
     ::grpc::ServerContext* context, const ::google::protobuf::Empty* request,
     ::PointCloudTools::JobStatusResponse* response) {
-  //   PointCloudTools::JobStatus* status = new PointCloudTools::JobStatus();
   auto status = response->mutable_status_map();
 
   *status = get_job_status_map().status_map();
