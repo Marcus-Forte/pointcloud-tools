@@ -5,7 +5,9 @@
 
 #include "filter_services.h"
 #include "metric_services.h"
+#ifdef WITH_COLMAP
 #include "reconstruct_services.h"
+#endif
 
 using grpc::Channel;
 using grpc::Server;

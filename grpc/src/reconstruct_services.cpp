@@ -19,7 +19,7 @@ std::mutex mutex;
   std::cout << "Image path: " << images_path << std::endl;
   std::cout << "workspace path: " << workspace_path << std::endl;
   std::cout << "Quality: " << (int)quality << std::endl;
-  // options.use_gpu = true;
+  options.use_gpu = true;
   options.quality = quality;
   options.num_threads = 2;
 

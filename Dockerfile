@@ -1,4 +1,6 @@
-FROM ubuntu:latest as tools-base
+# We can swap for CUDA images to enable cuda usage
+# nvidia base image: nvcr.io/nvidia/cuda:12.3.1-devel-ubi8
+FROM nvcr.io/nvidia/cuda:12.2.2-devel-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
