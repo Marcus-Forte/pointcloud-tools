@@ -24,9 +24,9 @@ class ReconstructServiceImpl : public PointCloudTools::PhotogrammetryServices::S
                               ::PointCloudTools::JobStatusResponse* response) override;
 
   PointCloudTools::JobStatusResponse& get_job_status_map() { return jobs_status_; }
+  std::unordered_map<std::string, std::thread*> get_job_map() { return jobs_; }
 
  protected:
   std::unordered_map<std::string, std::thread*> jobs_;
   PointCloudTools::JobStatusResponse jobs_status_;  // direct gRPC response
-  // std::vector<std::thread> jobs_;
 };
