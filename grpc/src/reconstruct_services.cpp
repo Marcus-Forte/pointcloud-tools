@@ -42,13 +42,16 @@ std::mutex mutex;
 
   while (!automatic.IsFinished()) {
     if (context->IsCancelled()) {
-      std::cout << images_path << ": Cancelled!\n";
+      automatic.Stop();
+      automatic.Wait();
+
       {
         std::lock_guard<std::mutex> lock_guard(mutex);
         status_map->at(images_path) = PointCloudTools::JobStatus::CANCELLED;
-        automatic.Stop();
-        automatic.Wait();
       }
+
+      std::cout << images_path << ": Cancelled!\n";
+
       return grpc::Status::CANCELLED;
     }
 
@@ -108,7 +111,8 @@ std::mutex mutex;
       ret = colmap_routine(this, context, images_path, workspace_path,
                            (colmap::AutomaticReconstructionController::Quality)quality);
     } else {
-      if (status_map->at(images_path) == PointCloudTools::DONE || status_map->at(images_path) == PointCloudTools::CANCELLED) {
+      if (status_map->at(images_path) == PointCloudTools::DONE ||
+          status_map->at(images_path) == PointCloudTools::CANCELLED) {
         ret = colmap_routine(this, context, images_path, workspace_path,
                              (colmap::AutomaticReconstructionController::Quality)quality);
       } else {
