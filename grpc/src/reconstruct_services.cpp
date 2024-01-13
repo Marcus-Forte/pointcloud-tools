@@ -10,7 +10,8 @@
 std::mutex mutex;
 
 void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_path,
-                    const std::string& workspace_path, colmap::AutomaticReconstructionController::Quality quality) {
+                    const std::string& workspace_path,
+                    colmap::AutomaticReconstructionController::Quality quality) {
   colmap::AutomaticReconstructionController::Options options;
   options.image_path = images_path;
   options.workspace_path = workspace_path;
@@ -67,14 +68,31 @@ void colmap_routine(ReconstructServiceImpl* caller, const std::string& images_pa
 
     auto status_map = jobs_status_.mutable_status_map();
 
+    // if (status_map->find(images_path) == status_map->end()) {
+    //   jobs_[images_path] = new std::thread(colmap_routine, this, images_path, workspace_path,
+    //   (colmap::AutomaticReconstructionController::Quality) quality);
+    // } else {
+    //   if (status_map->at(images_path) == PointCloudTools::DONE) {
+    //     jobs_[images_path]->join();
+    //     delete jobs_[images_path];
+
+    //     jobs_[images_path] = new std::thread(colmap_routine, this, images_path, workspace_path,
+    //     (colmap::AutomaticReconstructionController::Quality) quality);
+    //   } else {
+    //     return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
+    //                         "Job for that location is still running.");
+    //   }
+    // }
+
+    // Blocking call...
+
     if (status_map->find(images_path) == status_map->end()) {
-      jobs_[images_path] = new std::thread(colmap_routine, this, images_path, workspace_path, (colmap::AutomaticReconstructionController::Quality) quality);
+      colmap_routine(this, images_path, workspace_path,
+                     (colmap::AutomaticReconstructionController::Quality)quality);
     } else {
       if (status_map->at(images_path) == PointCloudTools::DONE) {
-        jobs_[images_path]->join();
-        delete jobs_[images_path];
-
-        jobs_[images_path] = new std::thread(colmap_routine, this, images_path, workspace_path, (colmap::AutomaticReconstructionController::Quality) quality);
+        colmap_routine(this, images_path, workspace_path,
+                     (colmap::AutomaticReconstructionController::Quality)quality);
       } else {
         return grpc::Status(grpc::StatusCode::ALREADY_EXISTS,
                             "Job for that location is still running.");
