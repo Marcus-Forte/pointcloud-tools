@@ -22,6 +22,7 @@ std::mutex mutex;
   options.use_gpu = true;
   options.quality = quality;
   options.num_threads = 2;
+  options.dense = true;
 
   colmap::AutomaticReconstructionController automatic(
       options, std::make_shared<colmap::ReconstructionManager>());
@@ -66,6 +67,8 @@ std::mutex mutex;
     std::lock_guard<std::mutex> lock_guard(mutex);
     status_map->at(images_path) = PointCloudTools::JobStatus::DONE;
   }
+
+  // Output cloud is written to: <workspace>/dense/0/fused.ply
 
   return grpc::Status::OK;
 }

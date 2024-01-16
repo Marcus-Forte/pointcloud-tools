@@ -13,17 +13,18 @@ Any client who has access to the proto would be able to construct a message and 
 
 
 # Docker Build
-NOTE: If your PC does not have a CUDA device, swap the base image for `ubuntu:latest`
 
-- `./docker_build.sh` or `docker build duna-pointcloud-tools .`
+- `docker build -f Dockerfile -t duna-pointcloud-tools .`
 
-To build `tools` with colmap, use the following. Make sure base image is built.
+If your PC does not have a CUDA device, swap the base image for `ubuntu:latest`:
 
-- `docker build -f Dockerfile -t duna-pointcloud-tools-gpu .`
+- `docker build --build-arg BASE=ubuntu:latest -t duna-pointcloud-tools .`
+
+Then, use the previously base image to build the colmap application.
+
 - `docker build -f Dockerfile.colmap -t duna-pointcloud-tools-colmap .`
 
 # Docker run
-- `docker run -p 50052:50052 -it duna-pointcloud-tools`
 
 To run `tools` with colmap, use the following. You probably need NVIDIA toolkit installed on the host (see https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html):
 

@@ -1,7 +1,7 @@
 # Make sure other image is built.
 # Select cuda architecture accordingly!
 
-FROM duna-pointcloud-tools-gpu
+FROM duna-pointcloud-tools
 
 WORKDIR /deps
 
