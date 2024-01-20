@@ -17,7 +17,7 @@ jobs:
           submodules: true
 
       - name: Build
-        run: ./docker_build.sh
+        run: docker build -f Dockerfile --build-arg BASE=ubuntu:latest -t duna-pointcloud-tools .
 
       - name: Test Scan Matching
         run: docker run duna-pointcloud-tools ctest --test-dir /app/build/scan_matching

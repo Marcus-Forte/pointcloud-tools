@@ -1,0 +1,24 @@
+syntax = "proto3";
+package PointCloudTools;
+
+enum ReconstructQuality {
+    LOW=0;
+    MEDIUM=1;
+    HIGH=2;
+    EXTREME=3;
+}
+
+enum JobStatus {
+    RUNNING=0;
+    DONE=1;
+    ERROR=2;
+    CANCELLED=3;
+}
+
+message ReconstructOptions {
+    ReconstructQuality quality = 1;
+}
+
+message JobStatusResponse {
+    map<string, JobStatus> status_map = 1;
+}

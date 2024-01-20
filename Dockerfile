@@ -1,4 +1,9 @@
-FROM ubuntu:latest
+# We can swap for CUDA images to enable cuda usage
+# nvidia base image: nvcr.io/nvidia/cuda:12.3.1-devel-ubi8
+
+ARG BASE=nvcr.io/nvidia/cuda:12.2.2-devel-ubuntu22.04
+
+FROM ${BASE}
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
@@ -36,6 +41,7 @@ RUN mkdir -p /deps/duna-optimizer/build && cd /deps/duna-optimizer/build && \
 RUN rm -rf /deps
 COPY . /app
 WORKDIR /app
+
 # Build application.
 RUN mkdir build && cd build && \
     CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON && \
@@ -43,4 +49,4 @@ RUN mkdir build && cd build && \
 
 # Run server.
 CMD "/app/build/grpc/grpc-interface-server"
-EXPOSE 10001
+EXPOSE 50052
