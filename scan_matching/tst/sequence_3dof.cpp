@@ -1,10 +1,10 @@
 #define PCL_NO_PRECOMPILE
-#include <duna_optimizer/cost_function_analytical.h>
-#include <duna_optimizer/cost_function_analytical_dyn.h>
-#include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt_dyn.h>
-#include <duna_optimizer/loss_function/geman_mcclure.h>
+#include <moptimizer/cost_function_analytical.h>
+#include <moptimizer/cost_function_analytical_dyn.h>
+#include <moptimizer/cost_function_numerical.h>
+#include <moptimizer/cost_function_numerical_dyn.h>
+#include <moptimizer/levenberg_marquadt_dyn.h>
+#include <moptimizer/loss_function/geman_mcclure.h>
 #include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/passthrough.h>
@@ -17,7 +17,7 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/correspondence_rejection_trimmed.h>
 
-#include <duna_optimizer/stopwatch.hpp>
+#include <moptimizer/stopwatch.hpp>
 
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"
@@ -110,7 +110,7 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
   std::cout << "Map size: " << this->target_->size() << std::endl;
   std::cout << "#Scans: " << this->source_vector_.size() << std::endl;
 
-  duna_optimizer::LevenbergMarquadtDynamic<TypeParam> optimizer(3);
+  moptimizer::LevenbergMarquadtDynamic<TypeParam> optimizer(3);
 
   optimizer.setMaximumIterations(15);
 
@@ -161,11 +161,11 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
     ;
     scan_matcher_model->setMaximumCorrespondenceDistance(0.5);
 
-    auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 3, 3>(
+    auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 3, 3>(
         scan_matcher_model, subsampled_input->size());
 
-    cost->setLossFunction(typename duna_optimizer::loss::GemmanMCClure<TypeParam>::Ptr(
-        new duna_optimizer::loss::GemmanMCClure<TypeParam>(0.1)));
+    cost->setLossFunction(typename moptimizer::loss::GemmanMCClure<TypeParam>::Ptr(
+        new moptimizer::loss::GemmanMCClure<TypeParam>(0.1)));
 
     optimizer.addCost(cost);
     optimizer.minimize(x0);

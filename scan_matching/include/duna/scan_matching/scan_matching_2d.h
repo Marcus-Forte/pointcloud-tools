@@ -1,6 +1,6 @@
 #pragma once
 
-#include "duna_optimizer/so3.h"
+#include "moptimizer/so3.h"
 #include "scan_matching_base.h"
 
 /* Unified point to plane 6DOF registration model. */

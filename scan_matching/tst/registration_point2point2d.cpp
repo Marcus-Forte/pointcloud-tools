@@ -1,8 +1,8 @@
-#include <duna_optimizer/cost_function_analytical_dyn.h>
-#include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt_dyn.h>
-#include <duna_optimizer/loss_function/geman_mcclure.h>
+#include <moptimizer/cost_function_analytical_dyn.h>
+#include <moptimizer/cost_function_numerical.h>
+#include <moptimizer/cost_function_numerical_dyn.h>
+#include <moptimizer/levenberg_marquadt_dyn.h>
+#include <moptimizer/loss_function/geman_mcclure.h>
 #include <getopt.h>
 #include <gtest/gtest.h>
 #include <pcl/common/transforms.h>
@@ -11,7 +11,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <duna_optimizer/stopwatch.hpp>
+#include <moptimizer/stopwatch.hpp>
 
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"

@@ -1,6 +1,6 @@
-#include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/levenberg_marquadt.h>
-#include <duna_optimizer/models/scan_matching.h>
+#include <moptimizer/cost_function_numerical.h>
+#include <moptimizer/levenberg_marquadt.h>
+#include <moptimizer/models/scan_matching.h>
 #include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
@@ -9,7 +9,7 @@
 #include <pcl/registration/icp.h>
 #include <pcl/search/kdtree.h>
 
-#include <duna_optimizer/stopwatch.hpp>
+#include <moptimizer/stopwatch.hpp>
 
 #include "duna/scan_matching/scan_matching.h"
 
@@ -53,7 +53,7 @@ class RegistrationPoint2Plane : public ::testing::Test {
   pcl::search::KdTree<PointT>::Ptr target_kdtree;
   Eigen::Matrix<Scalar, 4, 4> reference_transform;
   Eigen::Matrix<Scalar, 4, 4> result_transform;
-  duna_optimizer::LevenbergMarquadt<Scalar, 6> optimizer;
+  moptimizer::LevenbergMarquadt<Scalar, 6> optimizer;
 };
 
 TYPED_TEST(RegistrationPoint2Plane, Translation) {
@@ -66,12 +66,12 @@ TYPED_TEST(RegistrationPoint2Plane, Translation) {
 
   // Act
   TypeParam x0[6] = {0};
-  typename duna_optimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>::Ptr
+  typename moptimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>::Ptr
       scan_matcher_model;
   scan_matcher_model.reset(
-      new duna_optimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>(
+      new moptimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>(
           this->source, this->target, this->target_kdtree));
-  auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 1>(scan_matcher_model,
+  auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 6, 1>(scan_matcher_model,
                                                                          this->source->size());
   this->optimizer.addCost(cost);
   this->optimizer.minimize(x0);
@@ -104,7 +104,7 @@ TYPED_TEST(RegistrationPoint2Plane, RotationPlusTranslation) {
   typename duna_old::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>::Ptr scan_matcher_model;
   scan_matcher_model.reset(new duna_old::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>(
       this->source, this->target, this->target_kdtree));
-  auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 1>(scan_matcher_model,
+  auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 6, 1>(scan_matcher_model,
                                                                          this->source->size());
   this->optimizer.addCost(cost);
   this->optimizer.minimize(x0);

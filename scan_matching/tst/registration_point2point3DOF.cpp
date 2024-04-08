@@ -1,8 +1,8 @@
-#include <duna_optimizer/cost_function_analytical_dyn.h>
-#include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt_dyn.h>
-#include <duna_optimizer/loss_function/geman_mcclure.h>
+#include <moptimizer/cost_function_analytical_dyn.h>
+#include <moptimizer/cost_function_numerical.h>
+#include <moptimizer/cost_function_numerical_dyn.h>
+#include <moptimizer/levenberg_marquadt_dyn.h>
+#include <moptimizer/loss_function/geman_mcclure.h>
 #include <getopt.h>
 #include <gtest/gtest.h>
 #include <pcl/common/transforms.h>
@@ -11,7 +11,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <duna_optimizer/stopwatch.hpp>
+#include <moptimizer/stopwatch.hpp>
 
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"
@@ -42,7 +42,7 @@ class RegistrationPoint2Point3DOF : public ::testing::Test {
     target.reset(new PointCloutT);
     // target_kdtree.reset(new pcl::search::KdTree<PointT>);
     reference_transform.setIdentity();
-    optimizer = std::make_shared<duna_optimizer::LevenbergMarquadtDynamic<Scalar>>(3);
+    optimizer = std::make_shared<moptimizer::LevenbergMarquadtDynamic<Scalar>>(3);
 
     if (pcl::io::loadPCDFile(TEST_DATA_DIR "/map1.pcd", *target) != 0) {
       throw std::runtime_error("Unable to load test data 'bunny.pcd'");
@@ -67,7 +67,7 @@ class RegistrationPoint2Point3DOF : public ::testing::Test {
   PointCloutT::Ptr target;
   Eigen::Matrix<Scalar, 4, 4> reference_transform;
   Eigen::Matrix<Scalar, 4, 4> result_transform;
-  typename duna_optimizer::Optimizer<Scalar>::Ptr optimizer;
+  typename moptimizer::Optimizer<Scalar>::Ptr optimizer;
 
   // Scanmathc parameters
   double voxel_size = 0.25;
@@ -98,7 +98,7 @@ TYPED_TEST(RegistrationPoint2Point3DOF, DificultRotation) {
 
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
 
-  auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 3, 3>(scan_matcher_model,
+  auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 3, 3>(scan_matcher_model,
                                                                          this->source->size());
 
   this->optimizer->addCost(cost);

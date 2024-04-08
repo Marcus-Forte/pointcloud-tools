@@ -34,7 +34,7 @@ RUN mkdir -p /deps/robin-map/build && cd /deps/robin-map/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) install
 
-RUN mkdir -p /deps/duna-optimizer/build && cd /deps/duna-optimizer/build && \
+RUN mkdir -p /deps/moptimizer_0/build && cd /deps/moptimizer_0/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) install
 

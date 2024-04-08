@@ -9,7 +9,7 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(${COMPONENT_NAME} INTERFACE mapping duna::duna-optimizer)
+target_link_libraries(${COMPONENT_NAME} INTERFACE mapping duna::moptimizer)
 
 # Component installation.
 install(

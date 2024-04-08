@@ -1,9 +1,9 @@
-#include <duna_optimizer/cost_function_analytical.h>
-#include <duna_optimizer/cost_function_analytical_dyn.h>
-#include <duna_optimizer/cost_function_numerical.h>
-#include <duna_optimizer/cost_function_numerical_dyn.h>
-#include <duna_optimizer/levenberg_marquadt_dyn.h>
-#include <duna_optimizer/loss_function/geman_mcclure.h>
+#include <moptimizer/cost_function_analytical.h>
+#include <moptimizer/cost_function_analytical_dyn.h>
+#include <moptimizer/cost_function_numerical.h>
+#include <moptimizer/cost_function_numerical_dyn.h>
+#include <moptimizer/levenberg_marquadt_dyn.h>
+#include <moptimizer/loss_function/geman_mcclure.h>
 #include <getopt.h>
 #include <gtest/gtest.h>
 #include <pcl/common/transforms.h>
@@ -12,7 +12,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <duna_optimizer/stopwatch.hpp>
+#include <moptimizer/stopwatch.hpp>
 
 #include "duna/mapping/KDTreeMap.h"
 #include "duna/mapping/VoxelHashMap.h"
@@ -43,7 +43,7 @@ class RegistrationPoint2Point : public ::testing::Test {
     source.reset(new PointCloutT);
     target.reset(new PointCloutT);
     reference_transform.setIdentity();
-    optimizer = std::make_shared<duna_optimizer::LevenbergMarquadtDynamic<Scalar>>(6);
+    optimizer = std::make_shared<moptimizer::LevenbergMarquadtDynamic<Scalar>>(6);
 
     if (pcl::io::loadPCDFile(TEST_DATA_DIR "/map1.pcd", *target) != 0) {
       throw std::runtime_error("Unable to load test data 'bunny.pcd'");
@@ -68,7 +68,7 @@ class RegistrationPoint2Point : public ::testing::Test {
   PointCloutT::Ptr target;
   Eigen::Matrix<Scalar, 4, 4> reference_transform;
   Eigen::Matrix<Scalar, 4, 4> result_transform;
-  typename duna_optimizer::Optimizer<Scalar>::Ptr optimizer;
+  typename moptimizer::Optimizer<Scalar>::Ptr optimizer;
 
   // Scanmathc parameters
   double voxel_size = 0.25;
@@ -99,7 +99,7 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
 
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
 
-  auto cost = new duna_optimizer::CostFunctionAnalytical<TypeParam, 6, 3>(scan_matcher_model,
+  auto cost = new moptimizer::CostFunctionAnalytical<TypeParam, 6, 3>(scan_matcher_model,
                                                                           this->source->size());
 
   this->optimizer->addCost(cost);
@@ -158,7 +158,7 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
   scan_matcher_model.reset(
       new duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>(this->source, map));
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
-  auto cost = new duna_optimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model,
+  auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model,
                                                                          this->source->size());
 
   this->optimizer->addCost(cost);
@@ -210,9 +210,9 @@ TYPED_TEST(RegistrationPoint2Point, DISABLED_RotationPlusTranslationDynamic) {
   scan_matcher_model.reset(
       new duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>(this->source, map));
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
-  auto cost = new duna_optimizer::CostFunctionAnalyticalDynamic<TypeParam>(scan_matcher_model, 6, 3,
+  auto cost = new moptimizer::CostFunctionAnalyticalDynamic<TypeParam>(scan_matcher_model, 6, 3,
                                                                            this->source->size());
-  this->optimizer = std::make_shared<duna_optimizer::LevenbergMarquadtDynamic<TypeParam>>(6);
+  this->optimizer = std::make_shared<moptimizer::LevenbergMarquadtDynamic<TypeParam>>(6);
 
   this->optimizer->addCost(cost);
   this->optimizer->setMaximumIterations(100);

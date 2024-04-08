@@ -1,14 +1,14 @@
 #pragma once
 
-#include <duna_optimizer/logger.h>
-#include <duna_optimizer/model.h>
+#include <moptimizer/logger.h>
+#include <moptimizer/model.h>
 #include <pcl/common/transforms.h>
 
 #include "duna/mapping/IMap.h"
 
 namespace duna {
 template <typename PointSource, typename PointTarget, typename Scalar, typename Derived>
-class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derived> {
+class ScanMatchingBase : public moptimizer::BaseModelJacobian<Scalar, Derived> {
  public:
   using Ptr = std::shared_ptr<ScanMatchingBase>;
   using PointCloudSource = pcl::PointCloud<PointSource>;
@@ -58,7 +58,7 @@ class ScanMatchingBase : public duna_optimizer::BaseModelJacobian<Scalar, Derive
   virtual bool f(const Scalar *x, Scalar *f_x, unsigned int index) const override = 0;
   virtual bool f_df(const Scalar *x, Scalar *f_x, Scalar *jacobian,
                     unsigned int index) const override {
-    throw duna_optimizer::Exception("Non implemented jacobian model function `f_df` being used.");
+    throw moptimizer::Exception("Non implemented jacobian model function `f_df` being used.");
     return false;
   }
 
