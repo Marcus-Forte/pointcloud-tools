@@ -8,7 +8,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
 # Get dependencies.
+
 RUN apt-get update && apt-get install git build-essential libeigen3-dev libflann-dev libboost-all-dev libgtest-dev cmake -y
+ 
 
 WORKDIR /deps
 
@@ -41,6 +43,9 @@ RUN mkdir -p /deps/moptimizer_0/build && cd /deps/moptimizer_0/build && \
 RUN rm -rf /deps
 COPY . /app
 WORKDIR /app
+
+# Get third party dependencies
+RUN git submodule update --init --recursive
 
 # Build application.
 RUN mkdir build && cd build && \

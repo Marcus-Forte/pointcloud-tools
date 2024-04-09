@@ -22,17 +22,24 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.cpptools",
-				"ms-vscode.cmake-tools"
+				"ms-vscode.cmake-tools",
+				"ms-vscode.cpptools-extension-pack"
 			],
 			"settings": {
 				"cmake.exportCompileCommandsFile": true,
 				"C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
-				"cmake.environment": {"CI_BUILD": "1"}
+				"cmake.environment": {"CI_BUILD": "1"},
+				"cmake.configureArgs": ["-DBUILD_GRPC=ON", "-DBUILD_TESTS=ON"]
 			}
 		}
 		
-	}
+	},
+
+	"mounts": [
+		"source=build-cache,target=/app/build,type=volume"
+	],
+	"workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
+	"workspaceFolder": "/app"
 
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "devcontainer"

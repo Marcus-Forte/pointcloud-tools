@@ -4,6 +4,10 @@ This is a high-performance server that computes general and specialized point cl
 Any client who has access to the proto would be able to construct a message and perform request to this server
 
 
+# Dev Env
+
+We use Dev. Container extension to help get started with this repository. Make sure to download the extension and open this folder in the dev container.
+
 # Build
 
 - mkdir build && cd build
@@ -30,10 +34,4 @@ If building with GPU, make sure to set the cuda arch env accordingly. Example:
 
 # Docker run
 
-To run `tools` with colmap, use the following. You probably need NVIDIA toolkit installed on the host (see https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html):
-
-- `docker run -p 50052:50052 --gpus all -it duna-pointcloud-tools-colmap`
-
-# Compose with envoy
-The docker compose will spin up the server as well as an Envoy proxy to translate HTTP requests to gRPC server. Default port: 5000
-- `docker compose up`
+To run `tools` with colmap, use the following. You probably need NVIDIA toolkit installed on the host (see https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
