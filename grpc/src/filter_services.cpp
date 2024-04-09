@@ -8,7 +8,7 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
   std::cout << "Apply subset Filter\n";
   pcl::PointCloud<PointT>::Ptr pcl_cloud;
   std::shared_ptr<duna::conversions::LASConverter> converter;
-
+ 
   auto param = request->parameters();
   if (param.size() != 1)
     return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid takes a single parameter.");

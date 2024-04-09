@@ -1,5 +1,6 @@
 ./build
 ./.vscode
+./.devcontainer/
 
 # Adding this will prevent COPY . from caching when changes are applied to dockerfile
 Dockerfile

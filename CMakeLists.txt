@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(duna-pointcloud-tools)
 set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search surface features visualization)
 find_package(moptimizer REQUIRED)
 find_package(tsl-robin-map REQUIRED)
@@ -21,10 +24,6 @@ elseif(MSVC)
         add_compile_definitions(_USE_MATH_DEFINES)
 endif()
 
-
-# Protobuf & gRPC definitions
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # Declare options
 option(BUILD_FILTERS "Build filter functions" ON)
 option(BUILD_GRPC "Build GRPC API functions" OFF)
@@ -32,6 +31,10 @@ option(BUILD_MAPPING "Build mapping " ON)
 option(BUILD_SCANMATCHING "Build scan matching " ON)
 option(BUILD_TESTS "Build tests" OFF)
 option(WITH_COLMAP "With colmap" OFF)
+
+if(BUILD_TESTS)
+enable_testing()
+endif()
 
 include(GNUInstallDirs)
 if (BUILD_FILTERS)
