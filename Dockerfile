@@ -3,14 +3,13 @@
 
 ARG BASE=nvcr.io/nvidia/cuda:12.2.2-devel-ubuntu22.04
 
-FROM ${BASE}
+FROM ${BASE} as deps
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
 # Get dependencies.
 
 RUN apt-get update && apt-get install git build-essential libeigen3-dev libflann-dev libboost-all-dev libgtest-dev cmake -y
- 
 
 WORKDIR /deps
 
@@ -40,11 +39,13 @@ RUN mkdir -p /deps/moptimizer_0/build && cd /deps/moptimizer_0/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) install
 
+# remove source.
 RUN rm -rf /deps
+
+FROM deps as app
 COPY . /app
 WORKDIR /app
 
-# Get third party dependencies
 RUN git submodule update --init --recursive
 
 # Build application.
