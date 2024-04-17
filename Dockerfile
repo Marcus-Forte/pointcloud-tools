@@ -46,8 +46,6 @@ FROM deps as app
 COPY . /app
 WORKDIR /app
 
-RUN git submodule update --init --recursive
-
 # Build application.
 RUN mkdir build && cd build && \
     CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON && \

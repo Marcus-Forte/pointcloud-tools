@@ -8,6 +8,8 @@ Any client who has access to the proto would be able to construct a message and 
 
 We use Dev. Container extension to help get started with this repository. Make sure to download the extension and open this folder in the dev container.
 
+Make sure to call `git submodule update --init` before build.
+
 # Build
 
 - mkdir build && cd build
@@ -15,22 +17,9 @@ We use Dev. Container extension to help get started with this repository. Make s
 - make -j4
 - ./grpc/pc_server # <- executable.
 
-
 # Docker Build
 
-- `docker build -f Dockerfile -t duna-pointcloud-tools .`
-
-If your PC does not have a CUDA device, swap the base image for `ubuntu:latest`:
-
-- `docker build --build-arg BASE=ubuntu:latest -t duna-pointcloud-tools .`
-
-Then, use the previously base image to build the colmap application.
-
-- `docker build -f Dockerfile.colmap -t duna-pointcloud-tools-colmap .`
-
-If building with GPU, make sure to set the cuda arch env accordingly. Example:
-
-- `docker build -f Dockerfile.colmap --build-arg CUDA_ARCH=86 -t duna-pointcloud-tools-colmap .`
+- `docker build -f Dockerfile -t pointcloud-tools .`
 
 # Docker run
 
