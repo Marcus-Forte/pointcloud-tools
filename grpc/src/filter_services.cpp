@@ -1,65 +1,103 @@
-#include "filter_services.h"
+#include <iostream>
+#include <memory>
 
-#include "las_conversions.h"
+#include "filter_services.h"
+#include "filter_factory.h"
+
+#include "pcl/point_cloud.h"
+#include "pcl/point_types.h"
+
+namespace
+{
+  using PointT = pcl::PointXYZRGB;
+  using PointCloudT = pcl::PointCloud<PointT>;
+
+  bool validateRequest(const ::PointCloudTools::subsetFilterRequest* request, std::string &errorMessage)
+  {
+    if (request->output_name().size() == 0)
+    {
+      errorMessage = "Invalid output name.";
+      return false;
+    }
+
+    if (request->input_file().size() == 0)
+    {
+      errorMessage = "Invalid input file name.";
+      return false;
+    }
+
+    return true;
+  }
+}
+
+//Uncomment for debugging
+#define LOGGING_ENABLED
+
+void log(std::string message)
+{
+  #ifdef LOGGING_ENABLED
+    std::cout << message << std::endl;
+  #endif
+}
 
 grpc::Status FilterServicesImpl::applySubsetFilter(
     ::grpc::ServerContext* context, const ::PointCloudTools::subsetFilterRequest* request,
     ::PointCloudTools::stringResponse* response) {
-  std::cout << "Apply subset Filter\n";
-  pcl::PointCloud<PointT>::Ptr pcl_cloud;
-  std::shared_ptr<duna::conversions::LASConverter> converter;
- 
-  auto param = request->parameters();
-  if (param.size() != 1)
-    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Voxel grid takes a single parameter.");
+  
+  std::string error_message;
+  std::vector<float> parameters(request->parameters().begin(), request->parameters().end());
 
-  auto voxel_resolution = param[0];
-
-  if (voxel_resolution < 0.0)
-    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                        "Voxel grid does not take negative resolution.");
-
-  auto output_name = request->output_name();
-
-  if (output_name.size() == 0)
-    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Invalid output name.");
-
-  try {
-    converter = std::make_shared<duna::conversions::LASConverter>(request->input_file());
-
-    pcl_cloud = converter->toPCL<PointT>();
-  } catch (const std::exception& ex) {
-    std::cerr << "Exception: " << ex.what() << std::endl;
-    return grpc::Status(grpc::StatusCode::ABORTED, ex.what());
+  log("Validating Request");
+  if(!validateRequest(request, error_message))
+  {
+    std::cerr << "Error invalid request: " << error_message << std::endl;
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, error_message);
   }
 
-  pcl::PointCloud<PointT>::Ptr output_cloud = pcl::make_shared<pcl::PointCloud<PointT>>();
-
-  // TODO filter factory?
-  switch (request->operation()) {
-    case PointCloudTools::FilterOperation::VOXEL_GRID: {
-      pcl::VoxelGrid<PointT> voxel;
-      voxel.setInputCloud(pcl_cloud);
-      voxel.setLeafSize(voxel_resolution, voxel_resolution, voxel_resolution);
-      voxel.filter(*output_cloud);
-      std::cout << "Filtered from: " << pcl_cloud->size() << " to " << output_cloud->size()
-                << std::endl;
-      try {
-        const auto output_filename =
-            converter->fromPCLToLasFile<PointT>(output_cloud, request->output_name());
-        response->set_message(output_filename);
-
-      } catch (const std::exception& err) {
-        std::cerr << "Exception generating .las file: " << err.what() << std::endl;
-        return grpc::Status(grpc::StatusCode::ABORTED, err.what());
-      }
-      break;
-    }
-
-    default:
-      return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "Unimplemented filter.");
-      break;
+  std::unique_ptr<duna::Filter> filter = std::move(duna::filter_factory::createFilter(request->operation()));
+  if(filter == nullptr)
+  {
+    error_message = "Filter not implemented:";
+    std::cerr << "Error: " << error_message << std::endl;
+    return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, error_message);
   }
 
+  log("Validating Parameters");
+  if(!filter->validateParameters(parameters, error_message))
+  {
+    std::cerr << "Error invalid parameters: " << error_message << std::endl;
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, error_message);
+  }
+
+  log("Applying filter " + filter->getFilterName() + " on file: " +  request->input_file());
+
+  log("Loading and converting");
+  auto input_cloud = filter->loadPointCloud(request->input_file(), error_message);
+  
+  if(input_cloud == nullptr)
+  {
+    std::cerr << "Error while loading point cloud: " << error_message << std::endl;
+    return grpc::Status(grpc::StatusCode::ABORTED, error_message);
+  }
+  
+  log("Applying filter");
+  auto output_cloud = filter->applyFilter(parameters, input_cloud, error_message);
+
+  if(output_cloud == nullptr)
+  {
+    std::cerr << "Error while applying filter: " << error_message << std::endl;
+    return grpc::Status(grpc::StatusCode::ABORTED, error_message);
+  }
+
+  log("Saving Point cloud");
+  std::string output_filename = request->output_name();
+  
+  if(!filter->savePointCloud(output_cloud, request->input_file(), output_filename, error_message))
+  {
+    std::cerr << "Error while saving result: " << error_message << std::endl;
+    return grpc::Status(grpc::StatusCode::ABORTED, error_message);
+  }
+
+  response->set_message(output_filename);
   return grpc::Status::OK;
 }

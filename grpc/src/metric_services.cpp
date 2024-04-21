@@ -1,6 +1,5 @@
-
+#include <iostream>
 #include "metric_services.h"
-
 #include "metrics.h"
 #include "pcl_conversions.h"
 

@@ -15,7 +15,8 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 
-int main() {
+void RunServer() 
+{
   std::string server_address = "0.0.0.0:50052";
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
@@ -38,6 +39,10 @@ int main() {
   std::cout << "Listening to: " << server_address << std::endl;
 
   server->Wait();
+}
 
+int main() {
+  RunServer();
+  
   return 0;
 }
