@@ -1,14 +1,14 @@
 #pragma once
-#include "filter.h"
+#include "ifilter.h"
 
 namespace duna
 {
 
-class FilterVoxelGrid : public Filter
+class FilterVoxelGrid : public IFilter
 {
   public:
-  pcl::PointCloud<PointT>::Ptr applyFilter(std::vector<float>& parameters, pcl::PointCloud<PointT>::Ptr input, std::string& errorMessage) override;
-  bool validateParameters(std::vector<float> parameters, std::string &errorMessage) override;
+  pcl::PointCloud<PointT>::Ptr applyFilter(const std::vector<float>& parameters, pcl::PointCloud<PointT>::Ptr input) override;
+  void validateParameters(std::vector<float> parameters) override;
   std::string getFilterName() override { return "VOXEL GRID"; };
 };
 

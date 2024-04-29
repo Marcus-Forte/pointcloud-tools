@@ -1,10 +1,11 @@
 #include <iostream>
 #include "filter_sor.h"
+#include "service_exceptions.h"
 #include <pcl/filters/statistical_outlier_removal.h>
 
 namespace duna
 {
-  pcl::PointCloud<PointT>::Ptr FilterSOR::applyFilter(std::vector<float>& parameters, pcl::PointCloud<PointT>::Ptr input, std::string& errorMessage)
+  pcl::PointCloud<PointT>::Ptr FilterSOR::applyFilter(const std::vector<float>& parameters, pcl::PointCloud<PointT>::Ptr input)
   {
     pcl::StatisticalOutlierRemoval<PointT> sor;
 
@@ -12,40 +13,42 @@ namespace duna
     auto standardDeviation = parameters[0];
     auto neighborsLimit = parameters[1];
 
-    sor.setInputCloud (input);
-    sor.setStddevMulThresh (standardDeviation);
-    sor.setMeanK (neighborsLimit);
-    sor.filter (*output);
+    try
+    {
+      sor.setInputCloud (input);
+      sor.setStddevMulThresh (standardDeviation);
+      sor.setMeanK (neighborsLimit);
+      sor.filter (*output);
+    }
+    catch(...)
+    {
+      throw aborted_exception("Error occured while applying filter.");
+    }
 
     std::cout << "Filtered from: " << input->size() << " to " << output->size() << std::endl;
     return output;
   }
 
-  bool FilterSOR::validateParameters(std::vector<float> parameters, std::string &errorMessage) 
+  void FilterSOR::validateParameters(std::vector<float> parameters) 
   {
     if (parameters.size() != 2)
     {
-      errorMessage = "SOR takes 2 parameters.";
-      return false;
+      throw invalid_argument_exception("SOR takes 2 parameters.");
     }
 
     auto standardDeviation = parameters[0];
 
     if (standardDeviation < 0.0)
     {
-      errorMessage = "SOR does not take negative standard deviation.";
-      return false;
+      throw invalid_argument_exception("SOR does not take negative standard deviation.");
     }
 
     auto neighborsLimit = parameters[1];
 
     if (neighborsLimit < 0.0)
     {
-      errorMessage = "SOR does not take negative neighbors limit.";
-      return false;
+      throw invalid_argument_exception("SOR does not take negative neighbors limit.");
     }
-
-    return true;
   }
 
 } //end of namespace duna
