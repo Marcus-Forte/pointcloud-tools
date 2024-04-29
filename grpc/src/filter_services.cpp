@@ -8,6 +8,9 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 
+//Uncomment for debugging
+// #define LOGGING_ENABLED
+
 namespace
 {
   using PointT = pcl::PointXYZRGB;
@@ -25,21 +28,40 @@ namespace
       throw duna::invalid_argument_exception("Invalid input file name.");
     }
   }
-}
 
-//Uncomment for debugging
-#define LOGGING_ENABLED
+  class LogDisabler
+  {
+    public:
+    LogDisabler(): stdBuffer(std::cout.rdbuf())
+    {
+      std::cout.rdbuf(NULL);
+    }
 
-void log(std::string message)
-{
-  #ifdef LOGGING_ENABLED
-    std::cout << message << std::endl;
-  #endif
+    ~LogDisabler()
+    {
+      std::cout.rdbuf(stdBuffer);
+    }
+
+    private:
+    std::streambuf* stdBuffer;
+  };
+
+  void log(std::string message)
+  {
+    #ifdef LOGGING_ENABLED
+      std::cout << message << std::endl;
+    #endif
+  }
 }
 
 grpc::Status FilterServicesImpl::applySubsetFilter(
     ::grpc::ServerContext* context, const ::PointCloudTools::subsetFilterRequest* request,
     ::PointCloudTools::stringResponse* response) {
+
+  // Disabling cout messages in the whole executable
+  #ifndef LOGGING_ENABLED
+  LogDisabler disabler;
+  #endif
   
   std::string error_message;
   std::vector<float> parameters(request->parameters().begin(), request->parameters().end());
