@@ -1,11 +1,11 @@
 #define PCL_NO_PRECOMPILE
+#include <gtest/gtest.h>
 #include <moptimizer/cost_function_analytical.h>
 #include <moptimizer/cost_function_analytical_dyn.h>
 #include <moptimizer/cost_function_numerical.h>
 #include <moptimizer/cost_function_numerical_dyn.h>
 #include <moptimizer/levenberg_marquadt_dyn.h>
 #include <moptimizer/loss_function/geman_mcclure.h>
-#include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/radius_outlier_removal.h>
@@ -161,8 +161,8 @@ TYPED_TEST(SequenceRegistration, OptimizerIndoor) {
     ;
     scan_matcher_model->setMaximumCorrespondenceDistance(0.5);
 
-    auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 3, 3>(
-        scan_matcher_model, subsampled_input->size());
+    auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 3, 3>(scan_matcher_model,
+                                                                       subsampled_input->size());
 
     cost->setLossFunction(typename moptimizer::loss::GemmanMCClure<TypeParam>::Ptr(
         new moptimizer::loss::GemmanMCClure<TypeParam>(0.1)));

@@ -1,56 +1,50 @@
-#include <iostream>
 #include "filter_ror.h"
-#include "service_exceptions.h"
+
 #include <pcl/filters/radius_outlier_removal.h>
 
-namespace duna
-{
-  pcl::PointCloud<PointT>::Ptr FilterROR::applyFilter(const std::vector<float>& parameters, pcl::PointCloud<PointT>::Ptr input)
-  {
-    pcl::RadiusOutlierRemoval<PointT> ror;
-    pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
+#include <iostream>
 
-    auto radiusSearch = parameters[0];
-    auto neighborsLimit = parameters[1];
+#include "service_exceptions.h"
 
-    try
-    {
-      ror.setInputCloud(input);
-      ror.setRadiusSearch(radiusSearch);
-      ror.setMinNeighborsInRadius (neighborsLimit);
-      ror.setKeepOrganized(true);
-      ror.filter (*output);
-    }
-    catch(...)
-    {
-      throw aborted_exception("Error occured while applying filter.");
-    }
+namespace duna {
+pcl::PointCloud<PointT>::Ptr FilterROR::applyFilter(const std::vector<float>& parameters,
+                                                    pcl::PointCloud<PointT>::Ptr input) {
+  pcl::RadiusOutlierRemoval<PointT> ror;
+  pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
 
-    std::cout << "Filtered from: " << input->size() << " to " << output->size() << std::endl;
-    return output;
+  auto radiusSearch = parameters[0];
+  auto neighborsLimit = parameters[1];
+
+  try {
+    ror.setInputCloud(input);
+    ror.setRadiusSearch(radiusSearch);
+    ror.setMinNeighborsInRadius(neighborsLimit);
+    ror.setKeepOrganized(true);
+    ror.filter(*output);
+  } catch (...) {
+    throw aborted_exception("Error occured while applying filter.");
   }
 
-  void FilterROR::validateParameters(std::vector<float> parameters) 
-  {
-    if (parameters.size() != 2)
-    {
-      throw invalid_argument_exception("ROR takes 2 parameters.");
-    }
+  std::cout << "Filtered from: " << input->size() << " to " << output->size() << std::endl;
+  return output;
+}
 
-    auto radiusSearch = parameters[0];
-
-    if (radiusSearch < 0.0)
-    {
-      throw invalid_argument_exception("ROR does not take negative search radius.");
-    }
-
-    auto neighborsLimit = parameters[1];
-
-    if (neighborsLimit < 0.0)
-    {
-      throw invalid_argument_exception("ROR does not take negative neighbors limit.");
-    }
+void FilterROR::validateParameters(std::vector<float> parameters) {
+  if (parameters.size() != 2) {
+    throw invalid_argument_exception("ROR takes 2 parameters.");
   }
 
-} //end of namespace duna
+  auto radiusSearch = parameters[0];
 
+  if (radiusSearch < 0.0) {
+    throw invalid_argument_exception("ROR does not take negative search radius.");
+  }
+
+  auto neighborsLimit = parameters[1];
+
+  if (neighborsLimit < 0.0) {
+    throw invalid_argument_exception("ROR does not take negative neighbors limit.");
+  }
+}
+
+}  // namespace duna

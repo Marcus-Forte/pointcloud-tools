@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
 #include <moptimizer/cost_function_numerical.h>
 #include <moptimizer/levenberg_marquadt.h>
 #include <moptimizer/models/scan_matching.h>
-#include <gtest/gtest.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
@@ -68,11 +68,10 @@ TYPED_TEST(RegistrationPoint2Plane, Translation) {
   TypeParam x0[6] = {0};
   typename moptimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>::Ptr
       scan_matcher_model;
-  scan_matcher_model.reset(
-      new moptimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>(
-          this->source, this->target, this->target_kdtree));
+  scan_matcher_model.reset(new moptimizer::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>(
+      this->source, this->target, this->target_kdtree));
   auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 6, 1>(scan_matcher_model,
-                                                                         this->source->size());
+                                                                     this->source->size());
   this->optimizer.addCost(cost);
   this->optimizer.minimize(x0);
   so3::convert6DOFParameterToMatrix(x0, this->result_transform);
@@ -105,7 +104,7 @@ TYPED_TEST(RegistrationPoint2Plane, RotationPlusTranslation) {
   scan_matcher_model.reset(new duna_old::ScanMatching6DOFPoint2Plane<PointT, PointT, TypeParam>(
       this->source, this->target, this->target_kdtree));
   auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 6, 1>(scan_matcher_model,
-                                                                         this->source->size());
+                                                                     this->source->size());
   this->optimizer.addCost(cost);
   this->optimizer.minimize(x0);
   so3::convert6DOFParameterToMatrix(x0, this->result_transform);

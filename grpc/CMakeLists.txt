@@ -2,6 +2,8 @@ set (COMPONENT_NAME "grpc-interface")
 
 find_package(absl PATHS ${GRPC_INSTALL_PATH} CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
+find_package(colmap 3.9.1)
+
 message(STATUS "Using protobuf ${Protobuf_VERSION}")
 find_package(gRPC PATHS ${GRPC_INSTALL_PATH} CONFIG REQUIRED)
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
@@ -52,19 +54,19 @@ ${_PROTOBUF_LIBPROTOBUF}
 )
 
 set(grpc_lib_src
-src/metric_services.cpp
-src/filter_services.cpp
-src/las_conversions.cpp
-src/ifilter.cpp
-src/filter_voxel_grid.cpp
-src/filter_ror.cpp
-src/filter_sor.cpp
-src/filter_factory.cpp
-)
+  src/metric_services.cpp
+  src/filter_services.cpp
+  src/las_conversions.cpp
+  src/ifilter.cpp
+  src/filter_clipbox.cpp
+  src/filter_voxel_grid.cpp
+  src/filter_ror.cpp
+  src/filter_sor.cpp
+  src/filter_factory.cpp)
 
 set(colmap_lib)
-if(WITH_COLMAP)
-    find_package(colmap 3.9.1 REQUIRED)
+if(${colmap_FOUND})
+    message(STATUS "Colmap detected. Building reconstruct services")
     set(grpc_lib_src ${grpc_lib_src} src/reconstruct_services.cpp)
     set(colmap_lib colmap::colmap)
     add_compile_definitions(WITH_COLMAP)
@@ -76,10 +78,11 @@ ${grpc_lib_src}
 )
 
 target_link_libraries(${COMPONENT_NAME}-lib 
-${COMPONENT_NAME}-proto-lib
-metrics 
-las
-${colmap_lib})
+  ${COMPONENT_NAME}-proto-lib
+  metrics
+  las
+  ${colmap_lib}
+)
 
 add_executable(${COMPONENT_NAME}-server src/tools_grpc_server.cpp)
 target_link_libraries(${COMPONENT_NAME}-server ${COMPONENT_NAME}-lib )
