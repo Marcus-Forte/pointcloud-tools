@@ -7,6 +7,8 @@ import "common.proto";
 
 enum FilterOperation {
     VOXEL_GRID = 0;
+    SOR = 1;
+    ROR = 2;
 }
 
 message subsetFilterRequest {

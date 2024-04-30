@@ -55,6 +55,11 @@ set(grpc_lib_src
 src/metric_services.cpp
 src/filter_services.cpp
 src/las_conversions.cpp
+src/ifilter.cpp
+src/filter_voxel_grid.cpp
+src/filter_ror.cpp
+src/filter_sor.cpp
+src/filter_factory.cpp
 )
 
 set(colmap_lib)
