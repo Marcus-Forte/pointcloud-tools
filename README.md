@@ -10,6 +10,7 @@ We use Dev. Container extension to help get started with this repository. Make s
 ## Build
 
 Simply use container cmake extension to build the application. Or call `cmake .. && make` from `/app/build` inside the container.
+Make sure to call `git submodule update --init` before build.
 
 ## Test
 
