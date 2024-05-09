@@ -1,11 +1,11 @@
+#include <getopt.h>
+#include <gtest/gtest.h>
 #include <moptimizer/cost_function_analytical.h>
 #include <moptimizer/cost_function_analytical_dyn.h>
 #include <moptimizer/cost_function_numerical.h>
 #include <moptimizer/cost_function_numerical_dyn.h>
 #include <moptimizer/levenberg_marquadt_dyn.h>
 #include <moptimizer/loss_function/geman_mcclure.h>
-#include <getopt.h>
-#include <gtest/gtest.h>
 #include <pcl/common/transforms.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
@@ -100,7 +100,7 @@ TYPED_TEST(RegistrationPoint2Point, Translation) {
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
 
   auto cost = new moptimizer::CostFunctionAnalytical<TypeParam, 6, 3>(scan_matcher_model,
-                                                                          this->source->size());
+                                                                      this->source->size());
 
   this->optimizer->addCost(cost);
 
@@ -159,7 +159,7 @@ TYPED_TEST(RegistrationPoint2Point, RotationPlusTranslation) {
       new duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>(this->source, map));
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
   auto cost = new moptimizer::CostFunctionNumerical<TypeParam, 6, 3>(scan_matcher_model,
-                                                                         this->source->size());
+                                                                     this->source->size());
 
   this->optimizer->addCost(cost);
 
@@ -211,7 +211,7 @@ TYPED_TEST(RegistrationPoint2Point, DISABLED_RotationPlusTranslationDynamic) {
       new duna::ScanMatching6DOFPoint2Point<PointT, PointT, TypeParam>(this->source, map));
   scan_matcher_model->setMaximumCorrespondenceDistance(this->corr_dist);
   auto cost = new moptimizer::CostFunctionAnalyticalDynamic<TypeParam>(scan_matcher_model, 6, 3,
-                                                                           this->source->size());
+                                                                       this->source->size());
   this->optimizer = std::make_shared<moptimizer::LevenbergMarquadtDynamic<TypeParam>>(6);
 
   this->optimizer->addCost(cost);

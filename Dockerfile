@@ -2,15 +2,14 @@
 # nvidia base image: nvcr.io/nvidia/cuda:12.3.1-devel-ubi8
 
 ARG BASE=nvcr.io/nvidia/cuda:12.2.2-devel-ubuntu22.04
+ARG DEBIAN_FRONTEND=noninteractive
 
 FROM ${BASE} as deps
-ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
 
 # Get dependencies.
-
-RUN apt-get update && apt-get install git build-essential libeigen3-dev libflann-dev libboost-all-dev libgtest-dev cmake -y
-
+RUN apt-get update && apt-get install git build-essential clangd clang-tidy clang-format libeigen3-dev libflann-dev libboost-all-dev libgtest-dev cmake -y
+ 
 WORKDIR /deps
 
 RUN git clone --recurse-submodules -b v1.56.0 --depth 1 --shallow-submodules https://github.com/grpc/grpc && \
@@ -39,17 +38,40 @@ RUN mkdir -p /deps/moptimizer_0/build && cd /deps/moptimizer_0/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) install
 
-# remove source.
-RUN rm -rf /deps
+# Build colmap
+FROM deps as colmap
 
-FROM deps as app
+RUN apt-get update && apt-get install -y \
+    libsqlite3-dev \
+    libflann-dev \
+    libfreeimage-dev \
+    libmetis-dev \
+    libgoogle-glog-dev \
+    libgtest-dev \
+    libcgal-dev \
+    libglew-dev \
+    qtbase5-dev \
+    libceres-dev
+
+RUN git clone https://github.com/colmap/colmap.git -b 3.9.1
+
+# Arg may differ depending on the GPU
+ARG CUDA_ARCH=86
+RUN mkdir -p /deps/colmap/build && cd /deps/colmap/build && \
+    cmake .. -DOPENGL_ENABLED=OFF -DGUI_ENABLED=OFF -DCUDA_ENABLED=ON -DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH} && \
+    make -j$(nproc) install
+
+FROM colmap as app
+# Build application.
 COPY . /app
 WORKDIR /app
 
-# Build application.
 RUN mkdir build && cd build && \
-    CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON && \
+    CI_BUILD=1 cmake .. -DBUILD_GRPC=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF && \
     make -j$(nproc)
+
+# Cleanup
+RUN rm -rf /deps
 
 # Run server.
 CMD "/app/build/grpc/grpc-interface-server"

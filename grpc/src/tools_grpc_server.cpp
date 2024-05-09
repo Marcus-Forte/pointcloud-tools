@@ -9,20 +9,16 @@
 #include "reconstruct_services.h"
 #endif
 
-using grpc::Channel;
 using grpc::Server;
 using grpc::ServerBuilder;
-using grpc::ServerContext;
-using grpc::Status;
 
-void RunServer() 
-{
-  std::string server_address = "0.0.0.0:50052";
+void RunServer() {
+  const std::string server_address = "0.0.0.0:50052";
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 
-  MetricServicesImpl metric_service;
-  FilterServicesImpl filter_service;
+  duna::MetricServicesImpl metric_service;
+  duna::FilterServicesImpl filter_service;
 
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
@@ -43,6 +39,6 @@ void RunServer()
 
 int main() {
   RunServer();
-  
+
   return 0;
 }

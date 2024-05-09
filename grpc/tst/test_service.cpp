@@ -6,6 +6,8 @@
 
 #include "filters.pb.h"
 
+using namespace duna;
+
 class TestFilterService : public ::testing::Test {
  public:
   TestFilterService() {
@@ -45,7 +47,7 @@ TEST_F(TestFilterService, testVoxelGridNotEnoughParameters) {
   EXPECT_EQ(status.error_message(), "Voxel grid takes a single parameter.");
 }
 
-TEST_F(TestFilterService, testVoxelGriNegativeResolution) {
+TEST_F(TestFilterService, testVoxelGridNegativeResolution) {
   request.add_parameters(-1.5);
   request.set_output_name("output");
   request.set_input_file("input");

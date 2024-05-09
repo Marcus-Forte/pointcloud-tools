@@ -1,76 +1,68 @@
-#include <iostream>
-#include <pcl/filters/radius_outlier_removal.h>
-#include <pcl/point_cloud.h>
-#include <pcl/io/pcd_io.h>
-#include <filesystem>
-
 #include <omp.h>
+#include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
+
+#include <filesystem>
+#include <iostream>
 using PointT = pcl::PointXYZI;
 
-void printUsage()
-{
-    std::cerr << "batch_ror -r [radius] -n [min_pts] [cloud1] [cloud2] ...\n";
-}
+void printUsage() { std::cerr << "batch_ror -r [radius] -n [min_pts] [cloud1] [cloud2] ...\n"; }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+  if (argc < 2) {
+    printUsage();
+    exit(0);
+  }
 
-    if (argc < 2)
-    {
-        printUsage();
-        exit(0);
+  int option;
+  float radius = 0.2;
+  int min_pts = 1;
+  while ((option = getopt(argc, argv, "r:n:")) != -1) {
+    switch (option) {
+      case 'r':
+        radius = atof(optarg);
+        break;
+
+      case 'n':
+        min_pts = atoi(optarg);
+        break;
+
+      case '?':
+        exit(-1);
+        break;
     }
+  }
 
-    int option;
-    float radius = 0.2;
-    int min_pts = 1;
-    while ((option = getopt(argc, argv, "r:n:")) != -1)
-    {
-        switch (option)
-        {
-        case 'r':
-            radius = atof(optarg);
-            break;
+  std::cout << "Using radius: " << radius << std::endl;
+  std::cout << "Using min_pts: " << min_pts << std::endl;
 
-        case 'n':
-            min_pts = atoi(optarg);
-            break;
+  std::filesystem::create_directories("ror");
 
-        case '?':
-            exit(-1);
-            break;
-        }
+#pragma omp parallel for
+  for (int i = optind; i < argc; i++) {
+    pcl::PointCloud<PointT>::Ptr input_cloud(new pcl::PointCloud<PointT>);
+    if (pcl::io::loadPCDFile(argv[i], *input_cloud) == -1) {
+      continue;
     }
+    std::cout << "Processing: " << argv[i] << std::endl;
+    pcl::PointCloud<PointT>::Ptr output_cloud(new pcl::PointCloud<PointT>);
 
-    std::cout << "Using radius: " << radius << std::endl;
-    std::cout << "Using min_pts: " << min_pts << std::endl;
-    
-    std::filesystem::create_directories("ror");
+    pcl::RadiusOutlierRemoval<PointT> ror;
+    ror.setMinNeighborsInRadius(min_pts);
+    ror.setRadiusSearch(radius);
+    ror.setInputCloud(input_cloud);
+    ror.filter(*output_cloud);
 
-    #pragma omp parallel for
-    for (int i = optind; i < argc; i++)
-    {
-        pcl::PointCloud<PointT>::Ptr input_cloud(new pcl::PointCloud<PointT>);
-        if (pcl::io::loadPCDFile(argv[i], *input_cloud) == -1)
-        {
-            continue;
-        }
-        std::cout << "Processing: " << argv[i] << std::endl;
-        pcl::PointCloud<PointT>::Ptr output_cloud(new pcl::PointCloud<PointT>);
+    std::string output_filename(argv[i]);
+    output_filename =
+        "ror/" + output_filename.substr(0, output_filename.find_first_of('.')) + "_ror.pcd";
 
-        pcl::RadiusOutlierRemoval<PointT> ror;
-        ror.setMinNeighborsInRadius(min_pts);
-        ror.setRadiusSearch(radius);
-        ror.setInputCloud(input_cloud);
-        ror.filter(*output_cloud);
+    std::cout << "Saving filtered pointcloud: " << output_filename << std::endl;
+    std::cout << "Downsampled " << input_cloud->size() << " --> " << output_cloud->size()
+              << std::endl;
+    pcl::io::savePCDFile(output_filename, *output_cloud, true);
+  }
 
-        std::string output_filename(argv[i]);
-        output_filename = "ror/" + output_filename.substr(0, output_filename.find_first_of('.')) + "_ror.pcd";
-
-        std::cout << "Saving filtered pointcloud: " << output_filename << std::endl;
-        std::cout << "Downsampled " << input_cloud->size() << " --> " << output_cloud->size() << std::endl;
-        pcl::io::savePCDFile(output_filename, *output_cloud, true);
-    }
-
-    return 0;
+  return 0;
 }

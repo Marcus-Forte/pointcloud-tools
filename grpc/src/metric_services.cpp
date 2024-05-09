@@ -1,7 +1,11 @@
-#include <iostream>
 #include "metric_services.h"
+
+#include <iostream>
+
 #include "metrics.h"
 #include "pcl_conversions.h"
+
+namespace duna {
 
 grpc::Status MetricServicesImpl::computeMetric(
     ::grpc::ServerContext* context, const ::PointCloudTools::metricServiceRequest* request,
@@ -45,3 +49,4 @@ grpc::Status MetricServicesImpl::computeMetric(
     return grpc::Status(grpc::StatusCode::INTERNAL, ex.what());
   }
 }
+}  // namespace duna

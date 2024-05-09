@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
 {
-	"name": "Existing Dockerfile",
+	"name": "Tools Dev",
 	"build": {
 		// Sets the run context to one level up instead of the .devcontainer folder.
 		"context": "..",
@@ -25,23 +25,24 @@
 			"extensions": [
 				"ms-vscode.cmake-tools",
 				"ms-vscode.cpptools-extension-pack",
-				"zxh404.vscode-proto3"
+				"llvm-vs-code-extensions.vscode-clangd",
+				"zxh404.vscode-proto3",
+				"cschlosser.doxdocgen"
 			],
 			"settings": {
 				"cmake.exportCompileCommandsFile": true,
 				"C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
 				"cmake.environment": {"CI_BUILD": "1"},
-				"cmake.configureArgs": ["-DBUILD_GRPC=ON", "-DBUILD_TESTS=ON"]
+				"cmake.configureArgs": ["-DBUILD_GRPC=ON", "-DBUILD_TESTS=ON"],
+				"C_Cpp.intelliSenseEngine": "disabled" // in favor of clangd
 			}
 		}
 		
 	},
 
 	"mounts": [
-		"source=build-cache,target=/app/build,type=volume"
-	],
-	"workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
-	"workspaceFolder": "/app"
+		"source=pointclould-tools-build-cache,target=/workspaces/pointcloud-tools/build,type=volume"
+	]
 
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "devcontainer"

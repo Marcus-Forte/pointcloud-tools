@@ -7,6 +7,7 @@
 #include "pcl/point_types.h"
 #include "tools.grpc.pb.h"
 
+namespace duna {
 class MetricServicesImpl : public PointCloudTools::MetricServices::Service {
  public:
   using PointT = pcl::PointXYZ;
@@ -19,3 +20,4 @@ class MetricServicesImpl : public PointCloudTools::MetricServices::Service {
                              const ::PointCloudTools::metricServiceRequest* request,
                              ::PointCloudTools::numericResponse* response) override;
 };
+}  // namespace duna

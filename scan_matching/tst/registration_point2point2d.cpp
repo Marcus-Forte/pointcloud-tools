@@ -1,10 +1,10 @@
+#include <getopt.h>
+#include <gtest/gtest.h>
 #include <moptimizer/cost_function_analytical_dyn.h>
 #include <moptimizer/cost_function_numerical.h>
 #include <moptimizer/cost_function_numerical_dyn.h>
 #include <moptimizer/levenberg_marquadt_dyn.h>
 #include <moptimizer/loss_function/geman_mcclure.h>
-#include <getopt.h>
-#include <gtest/gtest.h>
 #include <pcl/common/transforms.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>

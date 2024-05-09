@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tools.grpc.pb.h"
-
+namespace duna {
 class FilterServicesImpl : public PointCloudTools::FilterServices::Service {
  public:
   FilterServicesImpl() = default;
@@ -11,3 +11,4 @@ class FilterServicesImpl : public PointCloudTools::FilterServices::Service {
                                    const ::PointCloudTools::subsetFilterRequest* request,
                                    ::PointCloudTools::stringResponse* response) override;
 };
+}  // namespace duna
