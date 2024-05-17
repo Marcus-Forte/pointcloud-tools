@@ -8,7 +8,7 @@
 
 namespace duna {
 pcl::PointCloud<PointT>::Ptr FilterROR::applyFilter(const std::vector<float>& parameters,
-                                                    pcl::PointCloud<PointT>::Ptr input) {
+                                                    pcl::PointCloud<PointT>::Ptr input) const {
   pcl::RadiusOutlierRemoval<PointT> ror;
   pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
 
@@ -29,7 +29,7 @@ pcl::PointCloud<PointT>::Ptr FilterROR::applyFilter(const std::vector<float>& pa
   return output;
 }
 
-void FilterROR::validateParameters(std::vector<float> parameters) {
+void FilterROR::validateParameters(const std::vector<float>& parameters) const {
   if (parameters.size() != 2) {
     throw invalid_argument_exception("ROR takes 2 parameters.");
   }

@@ -8,7 +8,7 @@
 
 namespace duna {
 pcl::PointCloud<PointT>::Ptr FilterSOR::applyFilter(const std::vector<float>& parameters,
-                                                    pcl::PointCloud<PointT>::Ptr input) {
+                                                    pcl::PointCloud<PointT>::Ptr input) const {
   pcl::StatisticalOutlierRemoval<PointT> sor;
 
   pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
@@ -28,7 +28,7 @@ pcl::PointCloud<PointT>::Ptr FilterSOR::applyFilter(const std::vector<float>& pa
   return output;
 }
 
-void FilterSOR::validateParameters(std::vector<float> parameters) {
+void FilterSOR::validateParameters(const std::vector<float>& parameters) const {
   if (parameters.size() != 2) {
     throw invalid_argument_exception("SOR takes 2 parameters.");
   }

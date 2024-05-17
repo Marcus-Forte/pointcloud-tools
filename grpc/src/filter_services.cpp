@@ -9,7 +9,7 @@
 #include "service_exceptions.h"
 
 // Uncomment for debugging
-//  #define LOGGING_ENABLED
+// #define LOGGING_ENABLED
 
 namespace {
 using PointT = pcl::PointXYZRGB;

@@ -39,9 +39,6 @@ std::string LASConverter::fromPCLToLasFile(const typename pcl::PointCloud<PointT
   auto output_file = (las_filepath_.parent_path() / output_filename).string() + ".las";
   ofs.open(output_file, std::ios::out | std::ios::binary);
 
-  std::cout << "file input: " << las_filepath_ << std::endl;
-  std::cout << "file output: " << output_file << std::endl;
-
   liblas::Writer writer(ofs, *input_las_header_);
   input_las_header_->SetSystemId("DUNA SYSTEM");
 
@@ -58,6 +55,25 @@ std::string LASConverter::fromPCLToLasFile(const typename pcl::PointCloud<PointT
 
   // ofs.close(); // DONT CLOSE!
 }
+
+template <class PointT>
+void LASConverter::toLAS(const typename pcl::PointCloud<PointT>::ConstPtr& input_cloud,
+                         const std::string& output_filename) {
+  std::ofstream ofs;
+
+  ofs.open(output_filename, std::ios::out | std::ios::binary);
+
+  auto header = std::make_shared<liblas::Header>();
+
+  liblas::Writer writer(ofs, *header);
+
+  for (const auto& pt : input_cloud->points) {
+    liblas::Point point(header.get());
+    point.SetCoordinates(pt.x, pt.y, pt.z);
+    point.SetColor(liblas::Color(pt.r, pt.g, pt.b));
+    writer.WritePoint(point);
+  }
+}
 }  // namespace duna::conversions
 
 // Explicit instantiations
@@ -67,3 +83,7 @@ duna::conversions::LASConverter::toPCL<pcl::PointXYZRGB>() const;
 template std::string duna::conversions::LASConverter::fromPCLToLasFile<pcl::PointXYZRGB>(
     const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input,
     const std::string& suffix) const;
+
+template void duna::conversions::LASConverter::toLAS<pcl::PointXYZRGB>(
+    const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input_cloud,
+    const std::string& output_filename);
