@@ -4,18 +4,18 @@
 	"name": "Tools Dev",
 
 	// UNCOMMEND TO DEVELOP IN WITH OTHER CONTAINERS
-	// "dockerComposeFile": ["../../docker-compose.yaml", "docker-compose.extend.yaml"],
-	// "service": "tools",
-	// "workspaceFolder": "/workspaces/pointcloud-tools/",
+	"dockerComposeFile": ["../../docker-compose.yaml", "docker-compose.extend.yaml"],
+	"service": "tools",
+	"workspaceFolder": "/workspaces/pointcloud-tools/",
 
 	// UNCOMMEND TO DEVELOP STANDALONE
-	"build": {
-		// Sets the run context to one level up instead of the .devcontainer folder.
-		"context": "..",
-		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-		"dockerfile": "../Dockerfile",
-		"target": "deps"
-	},
+	// "build": {
+	// 	// Sets the run context to one level up instead of the .devcontainer folder.
+	// 	"context": "..",
+	// 	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
+	// 	"dockerfile": "../Dockerfile",
+	// 	"target": "deps"
+	// },
 
 	// Configure tool-specific properties.
 	"customizations": {

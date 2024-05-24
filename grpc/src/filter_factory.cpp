@@ -1,8 +1,12 @@
 #include "filter_factory.h"
 
+#include <memory>
+
+#include "filter_clipbox.h"
 #include "filter_ror.h"
 #include "filter_sor.h"
 #include "filter_voxel_grid.h"
+#include "filters.pb.h"
 #include "service_exceptions.h"
 
 namespace duna {
@@ -17,6 +21,9 @@ std::unique_ptr<IFilter> createFilter(PointCloudTools::FilterOperation filterTyp
 
     case PointCloudTools::FilterOperation::ROR:
       return std::make_unique<FilterROR>();
+
+    case PointCloudTools::FilterOperation::CLIP_BOX:
+      return std::make_unique<ClipBox>();
 
     default:
       throw unimplemented_exception("Unimplemented filter.");

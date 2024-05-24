@@ -34,6 +34,17 @@ class LASConverter {
   std::string fromPCLToLasFile(const typename pcl::PointCloud<PointT>::ConstPtr& input_cloud,
                                const std::string& suffix, std::filesystem::path output_file) const;
 
+  /**
+   * @brief Helper function to be called statically.
+   *
+   * @tparam PointT
+   * @param input_cloud
+   * @param output_filename
+   */
+  template <class PointT>
+  void static toLAS(const typename pcl::PointCloud<PointT>::ConstPtr& input_cloud,
+                    const std::string& output_filename);
+
  private:
   std::filesystem::path las_filepath_;
   mutable std::shared_ptr<liblas::Header> input_las_header_;
