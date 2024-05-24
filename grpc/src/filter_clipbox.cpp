@@ -26,7 +26,7 @@ pcl::PointCloud<PointT>::Ptr ClipBox::applyFilter(const std::vector<float>& para
 
 void ClipBox::validateParameters(const std::vector<float>& parameters) const {
   if (parameters.size() != 6) {
-    throw invalid_argument_exception("ROR takes 2 parameters.");
+    throw invalid_argument_exception("ClipBox takes 6 parameters.");
   }
 }
 
