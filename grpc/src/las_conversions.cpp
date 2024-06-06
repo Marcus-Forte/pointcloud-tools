@@ -49,8 +49,6 @@ std::string LASConverter::fromPCLToLasFile(const typename pcl::PointCloud<PointT
     writer.WritePoint(point);
   }
 
-  std::cout << *input_las_header_;
-
   return output_file;
 
   // ofs.close(); // DONT CLOSE!
