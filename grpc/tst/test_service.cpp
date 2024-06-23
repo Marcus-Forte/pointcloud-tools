@@ -197,6 +197,11 @@ TEST_F(TestFilterService, testClipBox) {
   request.add_parameters(1.0);
   request.add_parameters(1.0);
 
+  // Rotation
+  request.add_parameters(0.0);
+  request.add_parameters(0.0);
+  request.add_parameters(0.0);
+
   request.set_output_name("output");
   request.set_operation(PointCloudTools::FilterOperation::CLIP_BOX);
 

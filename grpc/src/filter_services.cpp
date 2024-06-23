@@ -25,52 +25,37 @@ void validateRequest(const ::PointCloudTools::subsetFilterRequest* request) {
   }
 }
 
-class LogDisabler {
- public:
-  LogDisabler() : stdBuffer(std::cout.rdbuf()) { std::cout.rdbuf(NULL); }
-
-  ~LogDisabler() { std::cout.rdbuf(stdBuffer); }
-
- private:
-  std::streambuf* stdBuffer;
-};
-
-void log(std::string message) {
-#ifdef LOGGING_ENABLED
-  std::cout << message << std::endl;
-#endif
-}
 }  // namespace
 
 namespace duna {
 grpc::Status FilterServicesImpl::applySubsetFilter(
     ::grpc::ServerContext* context, const ::PointCloudTools::subsetFilterRequest* request,
     ::PointCloudTools::stringResponse* response) {
-// Disabling cout messages in the whole executable
-#ifndef LOGGING_ENABLED
-  LogDisabler disabler;
-#endif
-
   std::string error_message;
   std::vector<float> parameters(request->parameters().begin(), request->parameters().end());
 
   try {
-    log("Validating Request");
+    std::cout << "Validating Request";
     validateRequest(request);
 
     std::unique_ptr<duna::IFilter> filter =
         std::move(duna::factory::createFilter(request->operation()));
 
-    log("Validating Parameters");
+    std::cout << "Validating Parameters" << std::endl;
+
     filter->validateParameters(parameters);
 
-    log("Loading and converting");
+    std::cout << "Loading and converting" << std::endl;
+
     auto input_cloud = filter->loadPointCloud(request->input_file());
 
-    log("Applying filter " + filter->getFilterName() + " on file: " + request->input_file());
+    std::cout << "Applying filter " + filter->getFilterName() + " on file: " + request->input_file()
+              << std::endl;
+
     auto output_cloud = filter->applyFilter(parameters, input_cloud);
 
-    log("Saving Point cloud");
+    std::cout << "Saving Point cloud" << std::endl;
+
     std::string output_filename = request->output_name();
 
     filter->savePointCloud(output_cloud, request->input_file(), output_filename);

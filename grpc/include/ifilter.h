@@ -13,8 +13,9 @@ using PointT = pcl::PointXYZRGB;
 class IFilter {
  public:
   virtual ~IFilter() = default;
-  virtual pcl::PointCloud<PointT>::Ptr applyFilter(const std::vector<float>& parameters,
-                                                   pcl::PointCloud<PointT>::Ptr input) const = 0;
+  virtual pcl::PointCloud<PointT>::Ptr applyFilter(
+      const std::vector<float>& parameters,
+      const pcl::PointCloud<PointT>::ConstPtr input) const = 0;
   virtual pcl::PointCloud<PointT>::Ptr loadPointCloud(std::string input);
 
   virtual void validateParameters(const std::vector<float>& parameters) const = 0;

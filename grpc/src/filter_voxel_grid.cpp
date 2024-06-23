@@ -7,7 +7,7 @@
 
 namespace duna {
 pcl::PointCloud<PointT>::Ptr FilterVoxelGrid::applyFilter(
-    const std::vector<float>& parameters, pcl::PointCloud<PointT>::Ptr input) const {
+    const std::vector<float>& parameters, const pcl::PointCloud<PointT>::ConstPtr input) const {
   pcl::VoxelGrid<PointT> voxel;
   auto voxel_resolution = parameters[0];
   pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
