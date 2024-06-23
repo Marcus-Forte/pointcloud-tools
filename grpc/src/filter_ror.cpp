@@ -7,8 +7,8 @@
 #include "service_exceptions.h"
 
 namespace duna {
-pcl::PointCloud<PointT>::Ptr FilterROR::applyFilter(const std::vector<float>& parameters,
-                                                    pcl::PointCloud<PointT>::Ptr input) const {
+pcl::PointCloud<PointT>::Ptr FilterROR::applyFilter(
+    const std::vector<float>& parameters, const pcl::PointCloud<PointT>::ConstPtr input) const {
   pcl::RadiusOutlierRemoval<PointT> ror;
   pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
 

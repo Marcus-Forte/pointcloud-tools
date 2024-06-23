@@ -8,7 +8,7 @@ FROM ${BASE} as deps
 ENV SHELL /bin/bash
 
 # Get dependencies.
-RUN apt-get update && apt-get install git build-essential clangd clang-tidy clang-format libeigen3-dev libflann-dev libboost-all-dev libgtest-dev cmake -y
+RUN apt-get update && apt-get install git build-essential clangd clang-tidy clang-format libeigen3-dev libflann-dev libqhull-dev libboost-all-dev libgtest-dev cmake -y
  
 WORKDIR /deps
 
@@ -24,7 +24,7 @@ RUN mkdir -p /deps/grpc/build && cd /deps/grpc/build && \
 
 RUN mkdir -p /deps/pcl/build && cd /deps/pcl/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF -DWITH_OPENGL=OFF && \
-    make -j3 install
+    make -j5 install
 
 RUN mkdir -p /deps/oneTBB/build && cd /deps/oneTBB/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release -DTBB_TEST=OFF && \

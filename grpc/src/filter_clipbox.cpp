@@ -1,38 +1,30 @@
 #include "filter_clipbox.h"
 
 #include <pcl/common/common.h>
+#include <pcl/common/eigen.h>
+#include <pcl/common/transforms.h>
 #include <pcl/filters/crop_box.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/memory.h>
+#include <pcl/point_cloud.h>
 
+#include "ifilter.h"
 #include "service_exceptions.h"
 
 namespace duna {
 
-pcl::PointCloud<PointT>::Ptr ClipBox::applyFilter(const std::vector<float>& parameters,
-                                                  pcl::PointCloud<PointT>::Ptr input) const {
+pcl::PointCloud<PointT>::Ptr ClipBox::applyFilter(
+    const std::vector<float>& parameters, const pcl::PointCloud<PointT>::ConstPtr input) const {
   pcl::CropBox<PointT> cropbox;
 
-  std::cout << "Min: " << parameters[0] << "," << parameters[1] << "," << parameters[2] << std::endl;
-  std::cout << "Max: " << parameters[3] << "," << parameters[4] << "," << parameters[5] << std::endl;
+  pcl::PointCloud<PointT>::Ptr output = pcl::make_shared<pcl::PointCloud<PointT>>();
 
-  PointT min,max;  
-  pcl::getMinMax3D(*input, min, max);
-  std::cout << "Minmax: " << min << "," << max << std::endl;
-  
-  cropbox.setMin({-10,-10, -0, 0});
-  cropbox.setMax({100, 100, 100, 0});
-
-  // cropbox.setRotation({0, 0, 0});
-  // cropbox.setTranslation({0, 0, 0});
-
+  cropbox.setMin({parameters[0], parameters[1], parameters[2], 0});
+  cropbox.setMax({parameters[3], parameters[4], parameters[5], 0});
+  cropbox.setTransform(Eigen::Affine3f::Identity());
   cropbox.setInputCloud(input);
+  cropbox.filter(*(output));
 
-  pcl::PointCloud<PointT>::Ptr output = std::make_shared<pcl::PointCloud<PointT>>();
-  cropbox.filter(*output);
-
-  std::cout << "Clipbox pts: " << output->size() << std::endl;
-
-   throw aborted_exception("ClipBox error");
   return output;
 }
 

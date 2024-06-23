@@ -25,14 +25,12 @@ void validateRequest(const ::PointCloudTools::subsetFilterRequest* request) {
   }
 }
 
-
 }  // namespace
 
 namespace duna {
 grpc::Status FilterServicesImpl::applySubsetFilter(
     ::grpc::ServerContext* context, const ::PointCloudTools::subsetFilterRequest* request,
     ::PointCloudTools::stringResponse* response) {
-
   std::string error_message;
   std::vector<float> parameters(request->parameters().begin(), request->parameters().end());
 
@@ -43,16 +41,21 @@ grpc::Status FilterServicesImpl::applySubsetFilter(
     std::unique_ptr<duna::IFilter> filter =
         std::move(duna::factory::createFilter(request->operation()));
 
-    std::cout << "Validating Parameters" << std::endl;;
+    std::cout << "Validating Parameters" << std::endl;
+
     filter->validateParameters(parameters);
 
-    std::cout << "Loading and converting" << std::endl;;
+    std::cout << "Loading and converting" << std::endl;
+
     auto input_cloud = filter->loadPointCloud(request->input_file());
 
-    std::cout << "Applying filter " + filter->getFilterName() + " on file: " + request->input_file() << std::endl;; 
+    std::cout << "Applying filter " + filter->getFilterName() + " on file: " + request->input_file()
+              << std::endl;
+
     auto output_cloud = filter->applyFilter(parameters, input_cloud);
 
-    std::cout << "Saving Point cloud" << std::endl;;
+    std::cout << "Saving Point cloud" << std::endl;
+
     std::string output_filename = request->output_name();
 
     filter->savePointCloud(output_cloud, request->input_file(), output_filename);
