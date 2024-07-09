@@ -8,7 +8,7 @@
 #include "colmap/util/string.h"
 
 std::mutex mutex;
-
+namespace duna {
 ::grpc::Status colmap_routine(ReconstructServiceImpl* caller, ::grpc::ServerContext* context,
                               const std::string& images_path, const std::string& workspace_path,
                               colmap::AutomaticReconstructionController::Quality quality) {
@@ -19,7 +19,7 @@ std::mutex mutex;
   std::cout << "Image path: " << images_path << std::endl;
   std::cout << "workspace path: " << workspace_path << std::endl;
   std::cout << "Quality: " << (int)quality << std::endl;
-  options.use_gpu = true;
+  options.use_gpu = caller->get_use_gpu();
   options.quality = quality;
   options.num_threads = 2;
   options.dense = true;
@@ -71,6 +71,10 @@ std::mutex mutex;
   // Output cloud is written to: <workspace>/dense/0/fused.ply
 
   return grpc::Status::OK;
+}
+
+ReconstructServiceImpl::ReconstructServiceImpl(bool gpu) : use_gpu_(gpu) {
+
 }
 
 ::grpc::Status ReconstructServiceImpl::reconstructFromImages(
@@ -141,4 +145,5 @@ std::mutex mutex;
   *status = get_job_status_map().status_map();
 
   return grpc::Status::OK;
+}
 }
