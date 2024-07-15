@@ -23,7 +23,7 @@ RUN mkdir -p /deps/grpc/build && cd /deps/grpc/build && \
     make install -j$(nproc)
 
 RUN mkdir -p /deps/pcl/build && cd /deps/pcl/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DBUILD_ml=OFF -DWITH_OPENGL=OFF && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DWITH_OPENGL=OFF && \
     make -j5 install
 
 RUN mkdir -p /deps/oneTBB/build && cd /deps/oneTBB/build && \

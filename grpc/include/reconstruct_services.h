@@ -28,9 +28,10 @@ class ReconstructServiceImpl : public PointCloudTools::PhotogrammetryServices::S
   std::unordered_map<std::string, std::thread*> get_job_map() { return jobs_; }
 
   bool get_use_gpu() const { return use_gpu_; }
+
  protected:
   std::unordered_map<std::string, std::thread*> jobs_;
   PointCloudTools::JobStatusResponse jobs_status_;  // direct gRPC response
   bool use_gpu_;
 };
-}
+}  // namespace duna

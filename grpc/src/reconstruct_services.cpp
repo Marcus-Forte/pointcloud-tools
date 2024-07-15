@@ -73,9 +73,7 @@ namespace duna {
   return grpc::Status::OK;
 }
 
-ReconstructServiceImpl::ReconstructServiceImpl(bool gpu) : use_gpu_(gpu) {
-
-}
+ReconstructServiceImpl::ReconstructServiceImpl(bool gpu) : use_gpu_(gpu) {}
 
 ::grpc::Status ReconstructServiceImpl::reconstructFromImages(
     ::grpc::ServerContext* context, const ::PointCloudTools::ReconstructImageRequest* request,
@@ -146,4 +144,4 @@ ReconstructServiceImpl::ReconstructServiceImpl(bool gpu) : use_gpu_(gpu) {
 
   return grpc::Status::OK;
 }
-}
+}  // namespace duna

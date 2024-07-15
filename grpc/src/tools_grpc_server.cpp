@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
   const std::string server_address = "0.0.0.0:50052";
   bool use_gpu = false;
 
-  if(argc > 2) {
+  if (argc > 2) {
     use_gpu = std::atoi(argv[1]);
   }
 

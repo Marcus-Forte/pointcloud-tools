@@ -6,14 +6,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search surface features visualization)
+find_package(PCL 1.13 REQUIRED COMPONENTS common io filters search surface features visualization segmentation)
 find_package(moptimizer REQUIRED)
 find_package(tsl-robin-map REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time)
 
 if(UNIX)
         if(NOT APPLE)
-        add_compile_options(-march=native)
+        # add_compile_options(-march=native)
         endif()
 elseif(MSVC)
         add_compile_options(/bigobj)
@@ -26,7 +26,7 @@ option(BUILD_GRPC "Build GRPC API functions" OFF)
 option(BUILD_MAPPING "Build mapping " ON)
 option(BUILD_SCANMATCHING "Build scan matching " ON)
 option(BUILD_TESTS "Build tests" OFF)
-option(WITH_COLMAP "With colmap" OFF)
+option(BUILD_DEMOS "Build demo apps" OFF)
 
 if(BUILD_TESTS)
 enable_testing()
@@ -54,6 +54,10 @@ endif()
 
 add_subdirectory(metrics)
 
+if(BUILD_DEMOS)
+add_subdirectory(demo)
+endif()
+
 find_program(FORMATTER clang-format NO_CACHE)
 
 if(NOT FORMATTER)
@@ -69,6 +73,7 @@ ${CMAKE_SOURCE_DIR}/metrics \
 ${CMAKE_SOURCE_DIR}/mapping \
 ${CMAKE_SOURCE_DIR}/grpc \
 ${CMAKE_SOURCE_DIR}/filters \
+${CMAKE_SOURCE_DIR}/demo \
  -name *.cpp -o -name *.h | xargs clang-format -i"
  VERBATIM)
 endif()
