@@ -24,7 +24,7 @@ RUN mkdir -p /deps/grpc/build && cd /deps/grpc/build && \
 
 RUN mkdir -p /deps/pcl/build && cd /deps/pcl/build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_visualization=OFF -DWITH_VTK=OFF -DWITH_OPENGL=OFF && \
-    make -j5 install
+    make -j2 install
 
 RUN mkdir -p /deps/oneTBB/build && cd /deps/oneTBB/build && \
     cmake .. -DMAKE_BUILD_TYPE=Release -DTBB_TEST=OFF && \
