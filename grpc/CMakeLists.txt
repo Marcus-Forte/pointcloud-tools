@@ -1,5 +1,8 @@
 set (COMPONENT_NAME "grpc-interface")
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 find_package(absl PATHS ${GRPC_INSTALL_PATH} CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
 find_package(colmap 3.9.1)
@@ -25,6 +28,7 @@ generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/common.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/metrics.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/filters.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/reconstruct.proto")
+generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/segmentation.proto")
 generate_proto("${CMAKE_CURRENT_SOURCE_DIR}/protos/tools.proto")
 
 
@@ -43,6 +47,9 @@ ${CMAKE_CURRENT_BINARY_DIR}/filters.grpc.pb.cc
 ${CMAKE_CURRENT_BINARY_DIR}/reconstruct.pb.cc
 ${CMAKE_CURRENT_BINARY_DIR}/reconstruct.grpc.pb.cc
 
+${CMAKE_CURRENT_BINARY_DIR}/segmentation.pb.cc
+${CMAKE_CURRENT_BINARY_DIR}/segmentation.grpc.pb.cc
+
 ${CMAKE_CURRENT_BINARY_DIR}/tools.pb.cc
 ${CMAKE_CURRENT_BINARY_DIR}/tools.grpc.pb.cc
 )
@@ -56,6 +63,7 @@ ${_PROTOBUF_LIBPROTOBUF}
 set(grpc_lib_src
   src/metric_services.cpp
   src/filter_services.cpp
+  src/segmentation_services.cpp
   src/las_conversions.cpp
   src/ifilter.cpp
   src/filter_clipbox.cpp

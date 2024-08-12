@@ -1,0 +1,10 @@
+syntax = "proto3";
+package PointCloudTools;
+
+/* SEGMENTATION */
+
+message segmentationRequest {
+    string input_file = 1;
+    repeated string features = 2;
+    string output_name = 3;
+}

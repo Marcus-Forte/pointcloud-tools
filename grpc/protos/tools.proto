@@ -6,10 +6,15 @@ import "google/protobuf/empty.proto";
 import "common.proto";
 import "metrics.proto";
 import "filters.proto";
+import "segmentation.proto";
 import "reconstruct.proto";
 
 service FilterServices {
     rpc applySubsetFilter(subsetFilterRequest) returns (stringResponse) {}
+}
+
+service SegmentationServices {
+    rpc applySegmentation(segmentationRequest) returns (stringResponse) {}
 }
 
 service MetricServices {
