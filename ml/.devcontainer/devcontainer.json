@@ -3,8 +3,9 @@
 {
 	"name": "Python 3",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mdnf1992/pointcloud-ml-dev",
-	
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -13,11 +14,6 @@
 			]
 		}
 	},
-
-	"runArgs": [
-		"--gpus", "all",
-		"--ipc", "host"
-	]
 
 	// "mounts": [
 	// 	"source=torch3d-deps,target=${containerWorkspaceFolder}/.venv,type=volume"
