@@ -2,3 +2,6 @@
 	path = third_party/libLAS
 	url = https://github.com/libLAS/libLAS.git
 	branch = master
+[submodule "learning-pc-ml"]
+	path = learning-pc-ml
+	url = https://github.com/Marcus-Forte/learning-pc-ml.git
